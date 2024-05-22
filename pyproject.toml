@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+[project]
+name = "ampl"
+version = "0.0.3"
+authors = [
+  { name="Ashley N. Abraham", email="ashley.n.abraham@erdc.dren.mil" },
+  { name="James E. Ross", email="james.e.ross@erdc.dren.mil" },
+  { name="Brianna D. Thompson", email="brianna.d.ross@erdc.dren.mil" },
+  { name="Yi Zhang", email="yi.zhang@erdc.dren.mil" },
+]
+description = "ERDC ITL Auto MachineLine Pipeline package"
+readme = "README.md"
+requires-python = ">=3.9"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+
+[project.urls]
+"Homepage" = "https://github.com/erdc/ampl"
+"Bug Tracker" = "https://github.com/erdc/ampl/issues"
+
+[tool.pytest.ini_options]
+pythonpath = [
+  "src"
+]

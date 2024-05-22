@@ -1,0 +1,79 @@
+from typing import Final, Tuple
+
+
+class Constant(object):
+    TARGET_VARIABLE: Final[str] = 'target_variable'
+    BUILD_NN: Final[str] = 'build_nn'
+    OPTUNA_NN: Final[str] = 'optuna_nn'
+    EVALUATE_NN: Final[str] = 'eval_nn'
+    ENSEMBLE_NN: Final[str] = 'ensemble_nn'
+
+    BUILD_DT: Final[str] = 'build_dt'
+    OPTUNA_DT: Final[str] = 'optuna_dt'
+    EVALUATE_DT: Final[str] = 'eval_dt'
+    ENSEMBLE_DT: Final[str] = 'ensemble_dt'
+
+    TOTAL_POINTS: Final[str] = 'total_points'
+    TRAINING_POINTS: Final[str] = 'training_points'
+    TESTING_POINTS: Final[str] = 'testing_points'
+    VALIDATION_POINTS: Final[str] = 'validation_points'
+
+    MODEL: Final[str] = 'model'
+
+    MODEL_NAME: Final[str] = 'model_name'
+    STUDY_NAME: Final[str] = 'study_name'
+    N_MODELS: Final[str] = 'num_models'
+    N_FEATURES: Final[str] = 'n_features'
+
+    RESULTS_DIR: Final[str] = 'results_directory'
+    SAVED_MODELS_DIR: Final[str] = 'saved_models_directory'
+    PLOTS_DIR: Final[str] = 'plots_directory'
+    DATA: Final[str] = 'data'
+    FEATURE_IMPORTANCE: Final[str] = 'feature_importance'
+    RESULTS: Final[str] = 'results'
+    TRAIN_FRAC: Final[str] = 'train_frac'
+    TEST_FRAC: Final[str] = 'test_frac'
+
+    N_TRIALS: Final[str] = 'n_trials'
+    N_PRUNED_TRIALS: Final[str] = 'n_pruned_trials'
+    N_FAILED_TRIALS: Final[str] = 'n_failed_trials'
+    N_COMPLETED_TRIALS: Final[str] = 'n_completed_trials'
+    BEST_TRIAL_RUN: Final[str] = 'best_trial_run'
+    BEST_TRIAL: Final[str] = 'best_trial'
+    TOP_TRIALS: Final[str] = 'top_trials'
+    EPOCHS_SET: Final[str] = 'epochs_set'
+    N_RUNS: Final[str] = 'n_runs'
+    RUN_TIME: Final[str] = 'run_time_sec'
+    RUN_EPOCHS: Final[str] = 'run_epochs'
+
+    MAE: Final[str] = 'mae'
+    MSE: Final[str] = 'mse'
+    RMSE: Final[str] = 'rmse'
+    R2: Final[str] = 'r2'
+    NRMSE: Final[str] = 'nrmse'
+    MAX_ERR: Final[str] = 'max_err'
+    MAPE: Final[str] = 'mape'
+    MAX_PERC_ERR: Final[str] = 'max_perc_err'
+
+    PERCENT_ERRORS: Final[str] = 'percent_errors'
+    DT_PARAMS: Final[str] = 'params'
+
+    MODEL_EXT_DT: Final[str] = '.json'
+    MODEL_EXT_NN: Final[str] = '.keras'
+    HISTORY_EXT: Final[str] = '_history.pickle'
+
+    ERROR_PERCENTAGES: Final[Tuple[int]] = (20, 10, 5, 2.5, 1, 0.5)
+
+    LEARNING_RATE: Final[str] = 'learning_rate'
+    OPTIMIZER: Final[str] = 'optimizer'
+    ACTIVATION: Final[str] = 'activation'
+    N_LAYERS: Final[str] = 'n_layers'
+    N_UNITS_LAYER: Final[str] = 'n_units_layer_'
+    N_UNITS_INPUT_LAYER: Final[str] ='n_units_inputl'
+
+    LOSS: Final[str] = 'loss'
+    VAL_LOSS: Final[str] = "val_loss"
+
+    OPTUNA_MONITOR: Final[str] = VAL_LOSS
+    EARLY_STOPPING_MONITOR: Final[str] = LOSS
+    EARLY_STOPPING_PATIENCE: Final[int] = 10

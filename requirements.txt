@@ -1,0 +1,13 @@
+pandas
+scikit-learn
+numpy
+matplotlib
+importlib_resources
+yaml
+pyyaml
+tensorflow
+jinja2
+optuna
+joblib
+xgboost
+keras
