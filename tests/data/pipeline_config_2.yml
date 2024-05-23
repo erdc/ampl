@@ -1,0 +1,161 @@
+# AMPL Default Configuration YAML file
+# Please Change configuration settings marked as 'REQUIRED USER MODIFICATION'
+#   all other settings are 'OPTIONAL USER MODIFICATION'
+#
+#     Please see AMPL documentation on how to run AMPL
+
+
+{% raw %}
+# This Pipeline configuration YAML file uses jinja2 templating '{{ }}' to reuse variables,
+#   please refer to jinja2 templating for advance use, in general we do not recommend changing it
+#   Templating is only applied once, which means nested references of templating will not work!
+{% endraw %}
+
+# ////////// Step 0: initial common variables and defaults ////////////
+
+model:
+  study_name: 'study2' # REQUIRED USER MODIFICATION. !!Make it UNIQUE to avoid overwriting results!!
+  target_variable: 'y' # REQUIRED USER MODIFICATION.
+  dataset_name: 'dataset2' # REQUIRED USER MODIFICATION.
+  model_name: '{{model.target_variable}}_{{model.dataset_name}}' # (Unique name used to specify which model the result files belong to)
+  num_models: 1 # No. of top models to build by ampl, that'll be used later in ensemble step
+
+  # the file paths below may need to be edited based your OS file structure
+  # results_directory: './results'
+  results_directory: './results_{{model.study_name}}'
+  saved_models_directory: './results_{{model.study_name}}/saved_models/'
+  plots_directory: './results_{{model.study_name}}/plots/'
+
+  # All the AMPL journal will be outputted to a file journal_<target_variable>_<dataset_name>.json in the results dir
+  # All the saved models will be outputted to <target_variable>_<dataset_name>_top_0_model.keras for NN and .json for DT
+  # in the saved_models_directory location
+
+# ////////////// Step 1: Data and Feature Importance //////////////
+
+db: # Here file refers to SQLite3 database file and specifically its path
+  data_file: './data/dataset2.sqlite' # REQUIRED USER MODIFICATION, If using csv_file set this to null
+
+data:
+  # Only one input source is used, either read/write from Sqlite3 database file or CSV file
+  # If you do not wish to save the normalized processed data then set data_normalized_table_name and csv_normalized_file to null
+  # If both input sources are present CSV will take precedence
+  data_table_name: 'dataset2' # REQUIRED USER MODIFICATION.
+  data_normalized_table_name: '{{data.data_table_name}}_normalized' # Normalized version of SQL table
+  csv_file: null
+  csv_normalized_file: null # Normalized version of CSV file to read from and write to
+
+  cols_to_enum:  null # REQUIRED USER MODIFICATION FOR OPTUNA
+#      - "enum_col_1"
+#      - "enum_col_2"
+#      - "enum_col_2"
+  normalize_data: true # OPTIONAL USER MODIFICATION FOR PIPELINE
+
+  # All these percentages must add up to 1
+  train_frac: 0.8 # percentage of data used for training.
+  val_frac: 0.1 # percentage of data used for validation.
+  test_frac: 0.1 # percentage of data used for testing.
+
+feature_importance:
+  feature_list:  # REQUIRED USER MODIFICATION FOR OPTUNA
+    - x1
+    - x2
+    - x3
+    - x4
+    - x5
+    - x6
+
+  number_of_features: 6 # REQUIRED USER MODIFICATION # SET TO the number of possible features or less if using top subset of features.
+
+# ////////////// Step 2: Neural Network, Decision Tree (XGBoost), and  Optuna Settings //////////////
+
+nn: # neural network build settings
+  epochs: 10 #1000 # No. of epochs to use in NN Model training
+  patience: 10 # 50 # used for early stopping in NN Model training
+
+dt: # decision tree - xgboost build settings
+  early_stopping_rounds: 20
+  loss: "reg:squarederror"
+  eval_metric: 'rmse'
+  n_estimator: 100
+  verbosity: 1 # 0 (silent) - 3 (debug)
+
+optuna: # Optuna general settings
+  n_trials: 20 # 500
+  direction: 'minimize' #'maximize' #
+  parallel_percent: 0.9 # Percentage of cores to utilize for optuna between [0.1 - 0.9]
+  # This will need a special constructor to be written to parse handling a function call
+  #  being save in a variable. you will also need to add the following library to the pipeline_config file
+  # from pruners import MedianPruner
+  pruner:
+    !python/object:pruners.MedianPruner #
+
+optuna_nn:
+  best_trial_table_name: 'Best_Optuna_Trial_{{model.study_name}}_nn'
+  top_trials_table_name: 'Top_Optuna_Trials_{{model.study_name}}_nn'
+  trial_min_layers: 3 #
+  trial_max_layers: 15 #
+  max_neurons: 500 #
+  min_lr: 0.001 # 1e-3 #
+  max_lr: 0.1 #1e-1 #
+  trial_epochs: 3 # 20
+
+  activations: #
+    - relu
+    - softmax
+    - tanh
+    - sigmoid
+    - elu
+    - selu
+
+  optimizers: #
+    - 'Adam'
+    - 'SGD'
+    - 'RMSprop'
+    - 'Nadam'
+    - 'Adadelta'
+    - 'Adagrad'
+    - 'Adamax'
+
+  loss: 'mae' #
+  initializer: #
+    !python/object:tensorflow.keras.initializers.GlorotUniform
+#    !python/object:tensorflow.keras.initializers.RandomUniform
+#    kwargs:
+#      minval: 0.0
+#      maxval: 1.0
+
+optuna_dt: # Optuna - xgboost hyper-parameter optimization settings
+  best_trial_table_name: 'Best_Optuna_Trial_{{model.study_name}}_dt'
+  top_trials_table_name: 'Top_Optuna_Trials_{{model.study_name}}_dt'
+  early_stopping_rounds: 200
+  loss: "reg:squarederror"
+  eval_metric: 'rmse'
+  observation_key: 'validation_0-rmse'
+  n_estimator: 10000
+  sampler: !python/object:samplers.TPESampler
+  multivariate: false
+
+# ////////////// Step 4: Model Evaluation //////////////
+#################### Options ####################
+# There are no options available for evaluation step
+eval_nn: null
+
+eval_dt: null
+
+# ////////////// Step 5: Model Ensemble //////////////
+#################### Options ####################
+ensemble_nn: # Currently NN is only supported
+  # ensemble to produce
+  # '1A' = NN simple avg.
+  # '1M' = NN median
+  # '1WA' = NN weighted avg.
+
+  ensemble_mode: '1A' # str
+
+ensemble_dt: # DT ensemble not supported yet
+  # ensemble to produce
+  # '1A' = NN simple avg.
+  # '1M' = NN median
+  # '1WA' = NN weighted avg.
+
+  ensemble_mode: '1A' # str

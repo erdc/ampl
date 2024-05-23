@@ -12,8 +12,8 @@ class TestConfigFile(unittest.TestCase):
         this_path = Path(__file__).parent
         config_file = str(this_path / 'data/pipeline_config.yml')
         self.config = Configuration(config_file)
-        self.config['model']['target_col_function'] = lambda df_: df_['Impact_Velocity(m/s)'].astype('float') ** 2 - \
-                                                                  df_['Residual_Velocity(m/s)'].astype('float') ** 2
+        self.config['model']['target_col_function'] = lambda df_: df_['x04'].astype('float') ** 2 - \
+                                                                  df_['x05'].astype('float') ** 2
 
     def test_config_file(self):
         self.assertTrue(self.config['model']['dataset_name'], 'test')

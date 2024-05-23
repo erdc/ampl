@@ -12,8 +12,8 @@ class TestPipelineNN(unittest.TestCase):
         config_file = str(this_path / 'data/pipeline_config.yml')
         self.config = Configuration(config_file)
         self.config['model']['target_col_function'] = \
-            lambda df_: df_['Impact_Velocity(m/s)'].astype('float') ** 2 - \
-                        df_['Residual_Velocity(m/s)'].astype('float') ** 2
+            lambda df_: df_['x04'].astype('float') ** 2 - \
+                        df_['x05'].astype('float') ** 2
 
         self.pipeline = self.config.create_pipeline_nn()
 

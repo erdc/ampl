@@ -20,7 +20,7 @@ class TestFeatureImportance(unittest.TestCase):
 
     def test_run(self):
         df = pd.read_csv('./data/dataset+target.csv')
-        target = 'KER'
+        target = 'y'
 
         df_y = df[[target]]
         df_X = df.drop(columns=[target])
@@ -29,7 +29,7 @@ class TestFeatureImportance(unittest.TestCase):
         feature_list = self.config['feature_importance']['feature_list']
 
         df_y = df_y.astype(float)
-        cols_to_enum = ['Nose_Shape', 'Proj_Matl', 'Target_Matl']
+        cols_to_enum = ['x00', 'x01', 'x02']
         for col in cols_to_enum:
             df_X[col] = df_X[col].astype('category').cat.codes
         df_o = df_X.select_dtypes(include='object')

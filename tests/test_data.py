@@ -24,8 +24,8 @@ class TestData(unittest.TestCase):
     def setUp(self) -> None:
         this_path = Path(__file__).parent
         self.config_file = str(this_path / 'data/pipeline_config.yml')
-        self.target_func = lambda df_: (df_['Impact_Velocity(m/s)'].astype('float') ** 2 -
-                                        df_['Residual_Velocity(m/s)'].astype('float') ** 2)
+        self.target_func = lambda df_: (df_['x04'].astype('float') ** 2 -
+                                        df_['x05'].astype('float') ** 2)
 
         self.config = Configuration(self.config_file, target_col_function=self.target_func)
 
@@ -47,15 +47,15 @@ class TestData(unittest.TestCase):
         self.assertTrue(Path.is_file(Path(csv_file)))
 
         with self.assertRaises(ValueError) as cm:
-            data2 = read_csv(csv_file, 'KER', target_col_function=self.target_func,
+            data2 = read_csv(csv_file, 'y', target_col_function=self.target_func,
                                   feature_importance=self.config.create_feature_importance())
 
-        data3 = read_csv(csv_file, 'KER', target_col_function=self.target_func,
+        data3 = read_csv(csv_file, 'y', target_col_function=self.target_func,
                               cols_to_enum=self.config['data']['cols_to_enum'],
                               feature_importance=self.config.create_feature_importance())
 
         this_path = Path(__file__).parent
-        db_file = str(this_path / 'data/test.sqlite')
+        db_file = str(this_path / 'data/temp.sqlite')
         with Database.connect(db_file) as conn:
             data3.df.to_sql('dataset', conn, if_exists='replace', index=False)
         self.assertTrue(Path.is_file(Path(db_file)))
@@ -78,7 +78,7 @@ class TestData2(unittest.TestCase):
 
     def setUp(self) -> None:
         self.this_path = Path(__file__).parent
-        self.config_file = str(self.this_path / 'data/pipeline_config_moment.yml')
+        self.config_file = str(self.this_path / 'data/pipeline_config_2.yml')
         self.config = Configuration(self.config_file)
 
     def test_load_data1(self):

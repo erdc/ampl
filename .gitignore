@@ -33,5 +33,6 @@ examples/data_example1.ipynb
 !src/ampl/default_config.yml
 !tests/data/*.yml
 *.pbs
-tests/data/
 docs/
+/tests/data/dataset_temp.sqlite
+/tests/data/temp.sqlite
