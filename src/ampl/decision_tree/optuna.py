@@ -165,11 +165,7 @@ class PipelineOptuna(OptunaStep):
         logger.debug(f'training fraction = {self.data.train_size}')
         logger.debug(f'test_size = {(self.data.test_size + self.data.val_size)}')
 
-        y = self.data.df_y.squeeze().values.reshape(-1, 1)
-        X = self.data.df_X.values
-
-        X_train, X_test, y_train, y_test = train_test_split(X, y, train_size=self.data.train_size,
-                                                            random_state=random_state)
+        X_train, X_test, y_train, y_test = self.data.train_test_split(random_state=random_state)
 
         self.journal[C.TRAINING_POINTS] = X_train.shape[0]
         self.journal[C.TESTING_POINTS] = X_test.shape[0]

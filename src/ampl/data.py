@@ -23,7 +23,6 @@ class Database:
     data_file: str
     """SQLite3 data file path"""
 
-
     def connection(self) -> sqlite3.Connection:
         """
         sqllite3 connection context manager that closes connection automatically
@@ -114,6 +113,28 @@ class Data:
 
         return self.df.filter([self.target_variable])
 
+    def train_test_split(self, train_size: float = None, random_state: int = 0,
+                         stratify: Any = None) -> object:
+        """
+        Splits the given data into training, and test data. Training dataset size is the complement of
+        test size.
+        Training and Test data are used to build model
+        :param stratify: bool
+        :param train_size: float, default is set to .8 (80%)
+        :param random_state: int, default 0
+        :return: a tuple of  X_train, X_test, y_train, y_test
+        """
+        y = self.df_y.squeeze().values.reshape(-1, 1)
+        X = self.df_X.values
+
+        if train_size is None:
+            train_size = self.train_size
+
+        X_train, X_test, y_train, y_test = train_test_split(X, y, train_size=train_size,
+                                                            random_state=random_state, stratify=stratify)
+
+        return X_train, X_test, y_train, y_test
+
     def train_val_test_split(self, val_size: float = None, test_size: float = None, random_state: int = 0,
                              stratify: Any = None) -> object:
         """
@@ -127,16 +148,13 @@ class Data:
         :return: a tuple of  X_train, X_val, X_test, y_train, y_val, y_test
         """
 
-        y = self.df_y.squeeze().values.reshape(-1, 1)
-        X = self.df_X.values
-
-        if (test_size is None):
+        if test_size is None:
             test_size = self.test_size
-        if (val_size is None):
+        if val_size is None:
             val_size = self.val_size
 
-        X_train, x_val_test, y_train, y_val_test = train_test_split(X, y, test_size=(val_size+test_size),
-                                                                    random_state=random_state, stratify=stratify)
+        X_train, x_val_test, y_train, y_val_test = self.train_test_split(train_size=(1 - (val_size + test_size)),
+                                                                         random_state=random_state, stratify=stratify)
         relative_test_size = test_size / (val_size + test_size)
         X_val, X_test, y_val, y_test = train_test_split(x_val_test, y_val_test, test_size=relative_test_size,
                                                         random_state=random_state, stratify=stratify)
@@ -297,7 +315,7 @@ def read_sql(table_name: str, db_file: str, target_variable: str,
                 target_col_function=target_col_function,
                 train_size=train_size,
                 val_size=val_size,
-                test_size=test_size,)
+                test_size=test_size, )
 
 
 class SqlUtil(object):

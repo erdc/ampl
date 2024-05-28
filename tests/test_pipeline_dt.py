@@ -11,9 +11,9 @@ class TestPipelineDT(unittest.TestCase):
         this_path = Path(__file__).parent
         config_file = str(this_path / 'data/pipeline_config.yml')
         self.config = Configuration(config_file)
-        self.config['model']['target_col_function'] = \
-            lambda df_: df_['x04'].astype('float') ** 2 - \
-                        df_['x05'].astype('float') ** 2
+        target_function = lambda df_: df_['x04'].astype('float') ** 2 - df_['x05'].astype('float') ** 2
+        self.config = Configuration(config_file, target_col_function=target_function)
+
 
         self.pipeline = self.config.create_pipeline_dt()
 
