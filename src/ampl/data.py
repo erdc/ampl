@@ -5,6 +5,7 @@ import time
 from contextlib import contextmanager
 from pathlib import Path
 from typing import Callable, Union, Optional, Literal, List, Any
+from sklearn.preprocessing import OrdinalEncoder
 
 import pandas as pd
 from sklearn.model_selection import train_test_split
@@ -197,8 +198,10 @@ class Data:
         Accepts a dataframe and list of columns that need to be converted from string to enum.
         The return is a dataframe with the columns converted.
         """
-        for col in self.cols_to_enum:
-            self.df[col] = pd.factorize(self.df[col])[0]
+        df_enum = self.df[self.cols_to_enum]
+        encoder = OrdinalEncoder().set_output(transform="pandas")
+        df_enum = encoder.fit_transform(df_enum)
+        self.df[self.cols_to_enum] = df_enum[self.cols_to_enum]
 
     @staticmethod
     def normalize(df):
