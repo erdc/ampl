@@ -125,23 +125,26 @@ The proper AMPL directory structure should now look like the following. Do note 
 
 Many HPC systems purge files in your work directory ($WORKDIR) that have not be touched for 30 days and there is no way to recovery these files. You will want to regularly back up files from your work directory to avoid losing your work.
 
-## Cloning the AMPL Git Repo
+## Create the SSH Key and Add the Key to Git
 
-You will need to clone the AMPL git repo into your AMPL working directory to access the AMPL codes. In order to access the repo from the HPC, you will need to make sure that you have provided Git your SSH key.
+```shell
+Note: There are two methods to access git: HTTPS and SSH.
+HTTPS prompts you to enter userid and access token information everytime you push/pull, but with SSH you dont have to remember or enter any access token.
+```
 
 If you need to add an SSH key for your machine to be able to pull from git, use the following guide:
-[README_git] (./README_git.md?ref_type=heads#Gitlab-Setup)
+[README_git-create-the-ssh-key](./README_git.md?ref_type=heads#create-the-ssh-key)
 
-```
-Note: There are two methods to access git: HTTPS and SSH.
-HTTPS prompts you to enter userid and access token information everytime you push/pull, but with SSH you don't have to remember or enter any access token.
-```
+After you have created a git key or if you have created a git key on your machine in the past, you must add the git ssh key to git. Instructions for adding the git key can be found at [README_git-Add-SSH-Key-to-GitLab](./README_git.md?ref_type=heads#Add-SSH-Key-to-GitLab)
 
-The following link will take you to the HPC git login page, but will need a git account from the HPC help desk which can be reached with the following email address: servicenow@helpdesk.hpc.mil. 
+## Cloning the AMPL Git Repo
+
+You will need to clone the AMPL git repo into your AMPL working directory to access the AMPL codes. In order to access the repo from the HPC, you will need to make sure that you have provided Git your SSH key ([instructions found in the previous section](Create-the-SSH-Key-and-Add-the-Key-to-Git)).
+
+The following link will take you to the HPC git login page, but will need a git account from the HPC help desk which can be reached with the following email address: ```servicenow@helpdesk.hpc.mil```.
 [HPC Git Login](https://gitlab.hpc.mil/users/sign_in)
 
-
-Go to the AMPL HPC Git repo page in your browser located at the following link: [gitlab.hpc.mil](gitlab.hpc.mil).
+Go to the AMPL HPC Git repo page in your browser located at the following link: [gitlab.hpc.mil](https://gitlab.hpc.mil/jross1/ampl).
 Next, select Code and then there will be two options to `Clone`. Copy the URL based on the SSH Key or HTTPS option that you are using. The following command to clone the repo into your AMPL working directory. Make sure to put in your own <user_name> or this command will not work:
 
 ```shell

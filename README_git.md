@@ -12,7 +12,7 @@ HTTPS prompts you with userid and access token information everytime you push/pu
 
 
 ## Option 1: Get SSH key (recommended)
-First we need to create a ssh key.  If you already have a ssh key, make sure that it is added to Gitlab.
+First we need to create a ssh key.  If you already have a ssh key, make sure that it is added to Gitlab. Instructions on adding the ssh key to gt can be found in section XXXXX and 
 
 ### Create the ssh key
 This is needed to clone the repo, as well as pull/push from the repo.
@@ -70,8 +70,8 @@ Select Add key.
 
 ## Option 2: Get HTTPS Access Token (needed to clone the repo, as well as pull/push)
 
-1.	Access the AMPL Git repo from your browser.
-2.	Once in the repo, navigate to `Settings Access Tokens` on the left-hand side of the screen.
-3.	To create a new token, click `Add new token` on the ‘Project Access Tokens’ page.
-4.	Give your token a name, an expiration date, select `Maintainer` as the role, check all of the boxes under `Select scopes`, and then select `Create project access token`.
-5.	Be sure to save your access token somewhere once it is generated because this will be the only time it will be given to you.
+1. Access the AMPL Git repo from your browser.
+2. Once in the repo, navigate to `Settings Access Tokens` on the left-hand side of the screen.
+3. To create a new token, click `Add new token` on the ‘Project Access Tokens’ page.
+4. Give your token a name, an expiration date, select `Maintainer` as the role, check all of the boxes under `Select scopes`, and then select `Create project access token`.
+5. Be sure to save your access token somewhere once it is generated because this will be the only time it will be given to you.
