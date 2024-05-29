@@ -1,5 +1,5 @@
 ## Steps for working with git
-1. [GitLab setup](#gitLab-setup)
+1. [GitLab setup](#GitLab-setup)
 
 
 # GitLab setup

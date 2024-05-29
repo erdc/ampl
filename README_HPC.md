@@ -130,7 +130,7 @@ Many HPC systems purge files in your work directory ($WORKDIR) that have not be 
 You will need to clone the AMPL git repo into your AMPL working directory to access the AMPL codes. In order to access the repo from the HPC, you will need to make sure that you have provided Git your SSH key.
 
 If you need to add an SSH key for your machine to be able to pull from git, use the following guide:
-[README_git] (./README_git.md?ref_type=heads#-setup)
+[README_git] (./README_git.md?ref_type=heads#Gitlab-Setup)
 
 ```
 Note: There are two methods to access git: HTTPS and SSH.
@@ -231,11 +231,13 @@ PBS Script
 #### Use the following to request a CPU node or GPU node
 
 To request a CPU node use the followin line in the PBS script
-```shell 
+
+```shell
 #PBS -l select=1:ncpus=44:mpiprocs=44
 ```
 
 Alternatively, use the following line as a replacement in the PBS script above to access a GPU node:
+
 ```shell
 #PBS -l select=2:ncpus=22:mpiprocs=22:ngpus=1 
 ```
