@@ -119,6 +119,7 @@ The proper AMPL directory structure should now look like the following. Do note 
   │   ├── <code>
   │   ├── <all_run_dir>
   │   │   ├── <concrete_run_dir>
+  │   │   │   ├── <concrete_run_dir>
 ```
 
 ### Super Important to Know!!!
@@ -154,6 +155,7 @@ Next, select Code and then there will be two options to `Clone`. Copy the URL ba
 git clone git@gitlab.hpc.mil:<user_name>/AMPL.git
 
 ``` 
+
 
 ## PBS Script
 
