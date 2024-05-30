@@ -119,7 +119,7 @@ The proper AMPL directory structure should now look like the following. Do note 
   │   ├── <code>
   │   ├── <all_run_dir>
   │   │   ├── <concrete_run_dir>
-  │   │   │   ├── <concrete_run_dir>
+  │   │   │   ├── <concrete_data>
 ```
 
 ### Super Important to Know!!!
