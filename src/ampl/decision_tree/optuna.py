@@ -20,7 +20,7 @@ from ampl.state import State
 from ampl.util import Util
 from ampl.optuna import OptunaStep
 from ampl.constant import Constant as C
-
+from ampl.decision_tree.optuna_options import OptunaOptions
 import logging
 
 logger = logging.getLogger(__name__)
@@ -41,6 +41,7 @@ class PipelineOptuna(OptunaStep):
     pruner: optuna.pruners.MedianPruner = None
     sampler: optuna.samplers.TPESampler = None
     multivariate: bool = False
+    ranges: OptunaOptions = field(default_factory=lambda: OptunaOptions())
     n_jobs: int = -1
 
     def __post_init__(self):
@@ -61,6 +62,7 @@ class PipelineOptuna(OptunaStep):
         y_train: np.array
         x_valid: np.ndarray
         y_valid: np.array
+        ranges: OptunaOptions
         early_stopping_rounds: int = 200
         train_frac: float = 0.8
         loss: str = "reg:squarederror"
@@ -78,15 +80,20 @@ class PipelineOptuna(OptunaStep):
             params = {
                 "verbosity": 0,  # 0 (silent) - 3 (debug)
                 "objective": self.loss,
-                "n_estimators": trial.suggest_int('n_estimators', 100, 1000),
-                "max_depth": trial.suggest_int("max_depth", 4, 10),
-                "learning_rate": trial.suggest_float("learning_rate", 0.005, 0.05, log=True),
-                "colsample_bytree": trial.suggest_float("colsample_bytree", 0.2, 0.6, log=True),
-                "subsample": trial.suggest_float("subsample", 0.4, 0.8, log=True),
-                "alpha": trial.suggest_float("alpha", 0.01, 10.0, log=True),
-                "lambda": trial.suggest_float("lambda", 1e-8, 10.0, log=True),
-                "gamma": trial.suggest_float("lambda", 1e-8, 10.0, log=True),
-                "min_child_weight": trial.suggest_float("min_child_weight", 10, 1000, log=True),
+                "n_estimators": trial.suggest_int('n_estimators', self.ranges.n_estimators.min,
+                                                  self.ranges.n_estimators.max),
+                "max_depth": trial.suggest_int("max_depth", self.ranges.max_depth.min, self.ranges.max_depth.max),
+                "learning_rate": trial.suggest_float("learning_rate", self.ranges.learning_rate.min,
+                                                     self.ranges.learning_rate.max, log=True),
+                "colsample_bytree": trial.suggest_float("colsample_bytree", self.ranges.col_sample_by_tree.min,
+                                                        self.ranges.col_sample_by_tree.max, log=True),
+                "subsample": trial.suggest_float("subsample", self.ranges.subsample.min,
+                                                 self.ranges.subsample.max, log=True),
+                "alpha": trial.suggest_float("alpha", self.ranges.alpha.min, self.ranges.alpha.max, log=True),
+                "lambda": trial.suggest_float("lambda", self.ranges.lambda_.min, self.ranges.lambda_.max, log=True),
+                "gamma": trial.suggest_float("gamma", self.ranges.gamma.min, self.ranges.gamma.max, log=True),
+                "min_child_weight": trial.suggest_float("min_child_weight", self.ranges.min_child_weight.min,
+                                                        self.ranges.min_child_weight.max, log=True),
                 "seed": 24
                 # TODO Utilize parallel processing features in
             }
@@ -126,6 +133,7 @@ class PipelineOptuna(OptunaStep):
                                           y_train,
                                           x_valid,
                                           y_valid,
+                                          self.ranges,
                                           early_stopping_rounds=self.early_stopping_rounds,
                                           train_frac=self.data.train_size,
                                           loss=self.loss,

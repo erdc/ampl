@@ -10,6 +10,7 @@ from ampl.data import Data, Database, read_csv, read_sql
 from ampl.feature_importance import FeatureImportance
 import ampl.neural_network.pipeline
 import ampl.decision_tree.pipeline
+from ampl.decision_tree.optuna_options import OptunaOptions, Range
 
 import logging
 
@@ -303,6 +304,18 @@ class Configuration(dict):
         observation_key = self['optuna_dt']['observation_key']
         sampler = self['optuna_dt']['sampler']
         multivariate = self['optuna_dt']['multivariate']
+
+        r_vals = self['optuna_dt']['ranges']
+        ranges = OptunaOptions()
+        ranges.n_estimators = Range(*r_vals['n_estimators'])
+        ranges.max_depth = Range(*r_vals['max_depth'])
+        ranges.learning_rate = Range(*r_vals['learning_rate'])
+        ranges.col_sample_by_tree = Range(*r_vals['col_sample_by_tree'])
+        ranges.subsample = Range(*r_vals['subsample'])
+        ranges.alpha = Range(*r_vals['alpha'])
+        ranges.lambda_ = Range(*r_vals['lambda'])
+        ranges.gamma = Range(*r_vals['gamma'])
+        ranges.min_child_weight = Range(*r_vals['min_child_weight'])
 
         opt_nn = ampl.decision_tree.PipelineOptuna(state,
                                                    n_trials=n_trials,
