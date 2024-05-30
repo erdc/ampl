@@ -76,7 +76,9 @@ pip install shap pillow requests xgboost jinja2 more_itertools optuna-integratio
 The user will need to setup their SSH key to git in order to pull the source code for AMPL. This step can be skipped by users who have already setup their git SSH key. This process for setting up the git SSH key will be the same whether a user is running locally or on HPC as a user will need to store an SSH key for each machine they use to access git. Instructions for setting up git are found here within the [README_git] (./README_git.md?ref_type=heads#GitLab-setup)
 
 
-# <u> AMPL Interface </u>## <u> Creating AMPL Code and Run/working Directory - for both API and CLI users </u>
+# <u> AMPL Interface </u>
+
+## <u> Creating AMPL Code and Run/working Directory - for both API and CLI users </u>
 
 AMPL provides two different ways to interface with it. One is through the [AMPL - API](#ampl-api) (Application Programming Interface) and the other is via [AMPL - CLI](#ampl-cli) (Command Line Interface). The API will be helpful to users wishing to run scripts that use AMPL, and the CLI will be helpful for those wishing to run AMPL without writing scripts. An example of using the CLI would be running on HPC. Both the [AMPL - API](#ampl-api) and the [AMPL - CLI](#ampl-cli) will be described in detail in their respective sections below. 
 

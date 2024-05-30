@@ -245,7 +245,7 @@ cd pbs_scripts
 
 ### PBS Script Preamble
 
-The following lines in 'examples/ml-pipeline.pbs' represent the preamble of the pbs script. You will need to fill in your <project_ID>, choose a <run_name> to identify your job, and enter your <email_address> to be notified when your job begins and ends execution.
+The following lines in 'pbs_scripts/ml-pipeline.pbs' represent the preamble of the pbs script. You will need to fill in your <project_ID>, choose a <run_name> to identify your job, and enter your <email_address> to be notified when your job begins and ends execution.
 
 To get your <project_ID> in HPC system, use the following command and use the Subproject field as your <project_ID>
 
@@ -305,10 +305,10 @@ conda activate ampl
 
 ### Navigate to YAML File Location and Run AMPL
 
-The following lines in "examples/ml-pipeline.pbs" are used to point to the directory where your codes are located and to execute the AMPL code. The line ```python -m ampl ampl_config.yml``` in the PBS script will run all steps in AMPL in succession. Further commandline parameters for running AMPL through the CLI-interface method may be found in the [Getting Started CLI](./README.md?ref_type=heads#Getting-started-CLI) section of the README file:
+The following lines in "pbs_scripts/ml-pipeline.pbs" are used to point to the directory where your codes are located and to execute the AMPL code. The line ```python -m ampl ampl_config.yml``` in the PBS script will run all steps in AMPL in succession. Further commandline parameters for running AMPL through the CLI-interface method may be found in the [Getting Started CLI](./README.md?ref_type=heads#Getting-started-CLI) section of the README file:
 
 ```shell
-cd /p/work/<userID>/AMPL/all_run_dir/concrete_run_dir/concrete_data/
+cd /p/work/<userID>/AMPL/all_run_dir/concrete_run_dir/
 
 python -m ampl ampl_config.yml
 ```
