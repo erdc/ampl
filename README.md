@@ -308,6 +308,10 @@ As an example data set moving forward, we will be utilizing a public concrete da
   ->│   │   │   │   ├── concrete.csv
 ```
 
+A direct link can be found to the example concrete dataset at the following link:
+  https://archive.ics.uci.edu/dataset/165/concrete+compressive+strength
+
+  Yeh,I-Cheng. (2007). Concrete Compressive Strength. UCI Machine Learning Repository. https://doi.org/10.24432/C5PK67.
 
 6.	Create a default configuration file:
 
