@@ -150,7 +150,18 @@ The following link will take you to the HPC git login page, but will need a git 
 [HPC Git Login](https://gitlab.hpc.mil/users/sign_in)
 
 Go to the AMPL HPC Git repo page in your browser located at the following link: [gitlab.hpc.mil](https://gitlab.hpc.mil/AMPL/ampl).
-Next, select Code and then there will be two options to `Clone`. Copy the URL based on the SSH Key or HTTPS option that you are using. The following command to clone the repo into your AMPL working directory:
+Next, select Code and then there will be two options to `Clone`. Copy the URL based on the SSH Key or HTTPS option that you are using. The following command to clone the repo into your AMPL working directory at the following location:
+
+```shell
+  # the current folder structure should look like this 
+    ├── AMPL
+  ->│   ├── code
+    │   ├── all_run_dir
+    │   │   ├── concrete_run_dir
+    │   │   │   ├── concrete_data
+    │   │   │   │   ├── concrete.csv
+    │   │   │   ├── ampl_config.yml
+```
 
 ```shell
 # example using ssh:
@@ -159,11 +170,34 @@ Next, select Code and then there will be two options to `Clone`. Copy the URL ba
 git clone git@gitlab.hpc.mil:AMPL/ampl.git
 ```
 
+## Installing AMPL
+
+After downloading the AMPL repository, the next step is to install AMPL to a conda environment. Navigate to the code folder within the AMPL folder structure located here:
+
+```shell
+  # the current folder structure should look like this 
+    ├── AMPL
+  ->│   ├── code
+    │   │   ├── ampl
+    │   ├── all_run_dir
+    │   │   ├── concrete_run_dir
+    │   │   │   ├── concrete_data
+    │   │   │   │   ├── concrete.csv
+    │   │   │   ├── ampl_config.yml
+```
+
+Install the neededed packages with the following command
+
+```shell
+# ex: pip install -e <ampl_code_dir>
+pip install -e ampl
+```
+
 ## PBS Script
 
 The following steps are necessary to create a PBS script to allow the user to request resources and run AMPL on Carpenter. To help the user, a sample PBS script may be found within the examples folder under the name 'ml-pipeline.pbs'. A user will need to edit some details within this file to get things to function. Before attempting to run AMPL using a PBS script, it is required that the user has followed the steps in sections: [Installing Anaconda](Installing-Anaconda) and [Creating the Anaconda Environment in HPC to Use AMPL - with GPU support](Creating-the-Anaconda-Environment-in-HPC-to-Use-AMPL---with-GPU-support)
 
-The full pbs script found within examples/ml-pipeline.pbs is provided here for example and will be exaplined in the following sections:
+The full pbs script is provided here for example and will be exaplained in the following sections:
 
 ```shell
 #!/bin/bash
