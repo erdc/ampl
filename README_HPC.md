@@ -107,19 +107,23 @@ cd $WORKDIR
 ```
 
 ### IMPORTANT! DO NOT SKIP SETTING UP THE DIRECTORY STRUCTURE!!!!
-Please follow the following guide for setting up the AMPL directory structure:
-[Create the AMPL directory structure](./README.md?ref_type=heads#Recommended-directory-structure))
+
+Please follow the following guide for setting up the AMPL directory structure in the README. The setps in the section will walk the user through creating the propor directory structure along with downloading the sample concrete dataset and setting up the .yml file.
+
+[Suggested directory structure for organizing AMPL](./README.md?ref_type=heads#Create-the-AMPL-directory-structure)
 
 
-The proper AMPL directory structure should now look like the following. Do note that the user is able to use a different directory name instead of concrete_run_dir based on the name of the dataset.
+The proper AMPL directory structure should now look like the following if all steps in the "Create the AMPL directory structure" were followed. Do note that the user may use different names for the folders and files in this directory structure, but will have to rename file paths accordingly so it is not recommended until after gaining experience in working with AMPL.
 
 ```shell
-# The folder structure will look like this
-  ├── <ampl_dir>
-  │   ├── <code>
-  │   ├── <all_run_dir>
-  │   │   ├── <concrete_run_dir>
-  │   │   │   ├── <concrete_data>
+  # the current folder structure should look like this 
+    ├── AMPL
+    │   ├── code
+    │   ├── all_run_dir
+    │   │   ├── concrete_run_dir
+    │   │   │   ├── concrete_data
+    │   │   │   │   ├── concrete.csv
+  ->│   │   │   ├── ampl_config.yml
 ```
 
 ### Super Important to Know!!!
@@ -145,17 +149,15 @@ You will need to clone the AMPL git repo into your AMPL working directory to acc
 The following link will take you to the HPC git login page, but will need a git account from the HPC help desk which can be reached with the following email address: ```servicenow@helpdesk.hpc.mil```.
 [HPC Git Login](https://gitlab.hpc.mil/users/sign_in)
 
-Go to the AMPL HPC Git repo page in your browser located at the following link: [gitlab.hpc.mil](https://gitlab.hpc.mil/jross1/ampl).
-Next, select Code and then there will be two options to `Clone`. Copy the URL based on the SSH Key or HTTPS option that you are using. The following command to clone the repo into your AMPL working directory. Make sure to put in your own <user_name> or this command will not work:
+Go to the AMPL HPC Git repo page in your browser located at the following link: [gitlab.hpc.mil](https://gitlab.hpc.mil/AMPL/ampl).
+Next, select Code and then there will be two options to `Clone`. Copy the URL based on the SSH Key or HTTPS option that you are using. The following command to clone the repo into your AMPL working directory:
 
 ```shell
 # example using ssh:
 # ex: git clone <copied URL>
 
-git clone git@gitlab.hpc.mil:<user_name>/AMPL.git
-
-``` 
-
+git clone git@gitlab.hpc.mil:AMPL/ampl.git
+```
 
 ## PBS Script
 

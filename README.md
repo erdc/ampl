@@ -296,7 +296,7 @@ mkdir concrete_data
 
 5.	Copy your dataset to the <data_dir> directory. Please have the data in a SQLite or a CSV file type.  Most datasets can easily be converted into CSV format, but be sure that the index column is not included.
 
-As an example data set moving forward, we will be utilizing a public concrete data set downloaded using [jupyter notebook - ./examples/data_example1.ipynb](./examples/data_example1.ipynb). Running this notebook will create a csv file called "concrete.csv" using an open-source dataset in the examples folder. Move the concrete.csv file from <ampl_dir/examples> into the <data_dir> folder. 
+As an example data set moving forward, we will be utilizing a public concrete data set. Copy the "concrete.csv" file from "AMPL\code\ampl\tests\data\concrete.csv"  to the concrete_data folder created in the previous step. The below folder sructre shows where the concrete.csv data file shoud go. 
 
 ```shell
     # the current folder structure  
