@@ -133,10 +133,12 @@ optuna_nn:
 optuna_dt: # Optuna - xgboost hyper-parameter optimization settings
   best_trial_table_name: 'Best_Optuna_Trial_{{model.study_name}}_dt'
   top_trials_table_name: 'Top_Optuna_Trials_{{model.study_name}}_dt'
+
   early_stopping_rounds: 200
   observation_key: 'validation_0-rmse'
   sampler: !python/object:samplers.TPESampler
   multivariate: false
+
   ranges: # Ranges [min, max]
     n_estimators: [100, 1000]
     max_depth: [4, 10]

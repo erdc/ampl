@@ -292,7 +292,6 @@ class Configuration(dict):
     def create_optuna_dt(self):
         state = self.create_state_dt()
 
-        early_stopping_rounds = self['dt']['early_stopping_rounds']
         loss = self['dt']['loss']
         eval_metric = self['dt']['eval_metric']
 
@@ -301,6 +300,7 @@ class Configuration(dict):
         direction = self['optuna']['direction']
         pruner = self['optuna']['pruner']
 
+        early_stopping_rounds = self['optuna_dt']['early_stopping_rounds']
         observation_key = self['optuna_dt']['observation_key']
         sampler = self['optuna_dt']['sampler']
         multivariate = self['optuna_dt']['multivariate']
