@@ -78,23 +78,23 @@ class PipelineOptuna(OptunaStep):
 
             """
             params = {
-                "verbosity": 0,  # 0 (silent) - 3 (debug)
-                "objective": self.loss,
-                "n_estimators": trial.suggest_int('n_estimators', self.ranges.n_estimators.min,
+                C.VERBOSITY: 0,  # 0 (silent) - 3 (debug)
+                C.OBJECTIVE: self.loss,
+                C.N_ESTIMATORS: trial.suggest_int(C.N_ESTIMATORS, self.ranges.n_estimators.min,
                                                   self.ranges.n_estimators.max),
-                "max_depth": trial.suggest_int("max_depth", self.ranges.max_depth.min, self.ranges.max_depth.max),
-                "learning_rate": trial.suggest_float("learning_rate", self.ranges.learning_rate.min,
+                C.MAX_DEPTH: trial.suggest_int(C.MAX_DEPTH, self.ranges.max_depth.min, self.ranges.max_depth.max),
+                C.LEARNING_RATE: trial.suggest_float(C.LEARNING_RATE, self.ranges.learning_rate.min,
                                                      self.ranges.learning_rate.max, log=True),
-                "colsample_bytree": trial.suggest_float("colsample_bytree", self.ranges.col_sample_by_tree.min,
+                C.COLSAMPLEBYTREE: trial.suggest_float(C.COLSAMPLEBYTREE, self.ranges.col_sample_by_tree.min,
                                                         self.ranges.col_sample_by_tree.max, log=True),
-                "subsample": trial.suggest_float("subsample", self.ranges.subsample.min,
+                C.SUBSAMPLE: trial.suggest_float(C.SUBSAMPLE, self.ranges.subsample.min,
                                                  self.ranges.subsample.max, log=True),
-                "alpha": trial.suggest_float("alpha", self.ranges.alpha.min, self.ranges.alpha.max, log=True),
-                "lambda": trial.suggest_float("lambda", self.ranges.lambda_.min, self.ranges.lambda_.max, log=True),
-                "gamma": trial.suggest_float("gamma", self.ranges.gamma.min, self.ranges.gamma.max, log=True),
-                "min_child_weight": trial.suggest_float("min_child_weight", self.ranges.min_child_weight.min,
+                C.ALPHA: trial.suggest_float(C.ALPHA, self.ranges.alpha.min, self.ranges.alpha.max, log=True),
+                C.LAMBDA: trial.suggest_float(C.LAMBDA, self.ranges.lambda_.min, self.ranges.lambda_.max, log=True),
+                C.GAMMA: trial.suggest_float(C.GAMMA, self.ranges.gamma.min, self.ranges.gamma.max, log=True),
+                C.MINCHILDWEIGHT: trial.suggest_float(C.MINCHILDWEIGHT, self.ranges.min_child_weight.min,
                                                         self.ranges.min_child_weight.max, log=True),
-                "seed": 24
+                C.SEED: 24
                 # TODO Utilize parallel processing features in
             }
 

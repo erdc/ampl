@@ -48,10 +48,10 @@ class PipelineModelBuild(PipelineStep):
         assert len(best_trial_df) > j, 'Optuna Best Trial is not found/loaded'
 
         hp = best_trial_df.iloc[j].to_dict()
-        hp["objective"] = self.loss
-        hp["verbosity"] = self.verbosity
-        hp["n_estimators"] = int(hp['n_estimators'])        
-        hp['max_depth'] = int(hp['max_depth'])
+        hp[C.OBJECTIVE] = self.loss
+        hp[C.VERBOSITY] = self.verbosity
+        hp[C.N_ESTIMATORS] = int(hp[C.N_ESTIMATORS])
+        hp[C.MAX_DEPTH] = int(hp[C.MAX_DEPTH])
         # hp['eval_metric'] = self.eval_metric
         # hp['early_stopping_rounds'] = self.early_stopping_rounds,
 
