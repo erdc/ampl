@@ -5,7 +5,7 @@
 * Name the steps and mention breifly what those steps are. 
 * Describe how the results are display with the percentage of points under a 20,10,5,2.5,0.5
 * With the steps defined, improving the workflow to allow for both non-technical and
-  technical users. 
+  technical users.
 * After improvements were made, the next goal was to allow for automating the process of training a network.
 
 
@@ -18,7 +18,6 @@ The workflow steps used to design the models used for predicting values for the 
 * The tools used in each step must be able to be modifiable or replaceable to allow improvements to the pipeline
 * Able to run each step in the workflow as a solo component
 * Eliminate the need to manually design ML model to allow more time to be focused on adding new or enhancing existing Steps in the automated machine learning pipeline
-
 
 # <u> Steps to run AMPL </u>
 1. [Anaconda (Conda) setup](#anaconda-conda-setup)
