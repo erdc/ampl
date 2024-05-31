@@ -336,12 +336,10 @@ module load cuda
 source /app/CSE/CSE.20240128/Release/anaconda3-2023.03-1/etc/profile.d/conda.sh
 conda activate ampl
 
-cd /p/work/<userID>/AMPL/all_run_dir/concrete_run_dir/concrete_data/
+cd /p/work/<userID>/AMPL/all_run_dir/concrete_run_dir
 python -m ampl ampl_config.yml
 
 ```
-
-
 
 ### Execute AMPL on HPC-Carpenter
 
@@ -352,7 +350,6 @@ qsub ml-pipeline.pbs
 ```
 
 After executing the line above, a job will start on HPC. You should receive an email as since as your job starts to execute
-
 
 #### Optional method to launch HPC node in interactive mode
 NOTE: This step is specific to certain HPC, where you are able to edit your .bashrc file. Some HPC systems ask you NOT to edit the .bashrc file and will have instructions for editing some type of .personal_bashrc file.
