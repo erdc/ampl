@@ -71,6 +71,20 @@ class Constant(object):
     N_UNITS_LAYER: Final[str] = 'n_units_layer_'
     N_UNITS_INPUT_LAYER: Final[str] ='n_units_inputl'
 
+    VERBOSITY: Final[str] = 'verbosity'
+    OBJECTIVE : Final[str] = 'objective'
+    N_ESTIMATORS : Final[str] = 'n_estimators'
+    MAX_DEPTH : Final[str] = 'max_depth'
+    SUBSAMPLE : Final[str] = 'subsample'
+    ALPHA : Final[str] = 'alpha'
+    LAMBDA : Final[str] = 'lambda'
+    GAMMA : Final[str] = 'gamma'
+    SEED : Final[str] = 'seed'
+    COLSAMPLEBYTREE : Final[str] = 'colsample_bytree'
+    MINCHILDWEIGHT : Final[str] = "min_child_weight"
+
+
+
     LOSS: Final[str] = 'loss'
     VAL_LOSS: Final[str] = "val_loss"
 
