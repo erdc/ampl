@@ -2,14 +2,13 @@
 
 * Why are we looking at NNs
 * A set of steps are defined for the process of training a NN
-* Name the steps and mention breifly what those steps are. 
+* Name the steps and mention breifly what those steps are
 * Describe how the results are display with the percentage of points under a 20,10,5,2.5,0.5
 * With the steps defined, improving the workflow to allow for both non-technical and
   technical users.
 * After improvements were made, the next goal was to allow for automating the process of training a network.
 
-
-Machine Learning techniques have risen in popularity as ML has shown to be useful in providing an expert level response to predicting values, recognizing patterns, and identifying objects in images. While working through applying ML to ["SYNTHETIC CFD ESTIMATION FOR BLACKHAWK AIRFOIL DRAG COEFFICIENT"](https://doi.org/10.2514/6.2024-1230), and ["ESTIMATING KINETIC ENERGY REDUCTION FOR TERMINAL BALLISTICS"](https://link.springer.com/article/10.1007/s00521-023-09382-3) it was noted the the steps for applying ML was similiar enough to where a single workflow could be designed to have both of these problems along with previously unexplorered problem spaces. The steps that were taken for both the rotorcraft and ballistics problem were Feature Importance, Hyperparamter optimization searching for superior model parameters, training the best models returned from hyperparamter optimization, and evaluating the performance of the best models. This documentation will describe the details of each of the previously mentioned steps. Details will also be provided on how to utilize each of the steps individually or as an automated workflow. In this documentation we will describe an automated machine learning pipeline and present results of applying the pipeline to sample problems.
+Machine Learning techniques have risen in popularity as ML has shown to be useful in providing an expert level response to predicting values, recognizing patterns, and identifying objects in images. While working through applying ML to ["SYNTHETIC CFD ESTIMATION FOR BLACKHAWK AIRFOIL DRAG COEFFICIENT"](https://doi.org/10.2514/6.2024-1230), and ["ESTIMATING KINETIC ENERGY REDUCTION FOR TERMINAL BALLISTICS"](https://link.springer.com/article/10.1007/s00521-023-09382-3) it was noted that the steps for applying ML was similiar enough to where a single workflow could be designed to handle both of these problems along with previously unexplorered problem spaces. The steps that were taken for both the rotorcraft and ballistics problem were Feature Importance, Hyperparamter optimization searching for superior model parameters, training the best models returned from hyperparamter optimization, and evaluating the performance of the best models. This documentation will describe the details of each of the previously mentioned steps. Details will also be provided on how to utilize each of the steps individually or as an automated workflow. In this documentation we will describe an automated machine learning pipeline and present results of applying the pipeline to sample problems.
 
 The workflow steps used to design the models used for predicting values for the Ballistics and Rotorcraft work were the same steps. Since the Ballistics work and the rotorcraft work use very different data, but the steps in the workflow were the same, a general workflow that could design ML models for many different problems was desired. Having a general method would reduce effort in the beginning stages of working on a new problem or dataset and allow for exploration of methods and techniques to create better models. The general method would also remove the need to implement each step from ground up and would improve the timeline from receiving the data to having a reasonably performing model. The method for the general workflow is called "An Automated Machine Learning Pipeline" and the method will fit the following criteria:
 
@@ -36,14 +35,14 @@ The workflow steps used to design the models used for predicting values for the 
 
 # <u> Anaconda (Conda) setup </u>
 
-Please download and install Anaconda python if it has not previously been installed. Installatiion instructions can be found within [README_anaconda] (./README_anaconda.md?ref_type=heads#install-anaconda) if needed by the user.
+Please download and install Anaconda python if it has not previously been installed. Installatiion instructions can be found within [README_anaconda](./README_anaconda.md?ref_type=heads#install-anaconda) if needed by the user.
 
 
 ## <u> Anaconda Setup </u>
 
-It is important to maintain an up-to-date version of Anaconda. Even if a user already has Anaconda, please follow the steps for Updating Conda and Anaconda. Not having an updated version of conda is the most commonly experienced error by new users. 
+It is important to maintain an up-to-date version of Anaconda. Even if a user already has Anaconda, please follow the steps for Updating Conda and Anaconda. Not having an updated version of conda is the most commonly experienced error by new users.
 
-1. Update Conda and Anaconda (Recommended for all users) 
+1. Update Conda and Anaconda (Recommended for all users)
 
 ```shell
 # Update the conda package manager to the latest version in your base environment
@@ -54,7 +53,7 @@ conda activate
 # [You should then see (base).]
 ```
 
-2. Create a new conda environment named `ampl` and install the libraries and modules required for AMPL. 
+2. Create a new conda environment named `ampl` and install the libraries and modules required for AMPL.
 
 Note: If the user experiences an error during these installs, the most common source for that error is the need to update conda and anaconda as seen in the previous step.
 
@@ -297,7 +296,7 @@ mkdir concrete_data
 
 5.	Copy your dataset to the <data_dir> directory. Please have the data in a SQLite or a CSV file type.  Most datasets can easily be converted into CSV format, but be sure that the index column is not included.
 
-As an example data set moving forward, we will be utilizing a public concrete data set. Copy the "concrete.csv" file from "AMPL\code\ampl\tests\data\concrete.csv"  to the concrete_data folder created in the previous step. The below folder sructre shows where the concrete.csv data file shoud go. 
+As an example data set moving forward, we will be utilizing a public concrete data set. Copy the "concrete.csv" file from "AMPL\code\ampl\tests\data\concrete.csv"  to the concrete_data folder created in the previous step. The below folder sructre shows where the concrete.csv data file shoud go.
 
 ```shell
     # the current folder structure  
