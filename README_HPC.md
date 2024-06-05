@@ -69,12 +69,12 @@ Follow the following instructions to create your conda environment and install t
 
 ```shell
 # Create the conda environemnt 
-conda create -n ampl python=3.11 pandas numpy yaml scikit-learn jupyter recommonmark scikit-learn-intelex -y
+conda create -n ampl python=3.11 pandas numpy yaml jupyter recommonmark -y
 ```
 
 ```shell
 # install more things to the ampl conda environment
-conda install -n ampl -c conda-forge plotly sphinx optuna matplotlib imbalanced-learn sphinx-gallery cloud_sptheme -y
+conda install -n ampl -c conda-forge scikit-learn scikit-learn-intelex plotly sphinx optuna matplotlib imbalanced-learn sphinx-gallery cloud_sptheme -y
 ```
 
 ```shell
@@ -84,7 +84,7 @@ conda activate ampl
 
 ```shell
 # use pip to install a few things
-pip install --upgrade pip myst-parser joblib
+pip install --upgrade pip myst-parser
 ```
 
 ```shell
