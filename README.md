@@ -1,14 +1,14 @@
 # An Automated Machine Learning Pipeline (AMPL)
 
-* Why are we looking at NNs
-* A set of steps are defined for the process of training a NN
+* Why are we looking at NNs and ML models
+* A set of steps are defined for the process of training a NN and ML models
 * Name the steps and mention breifly what those steps are
-* Describe how the results are display with the percentage of points under a 20,10,5,2.5,0.5
+* Describe how the results are displayed with the percentage of points under a 20,10,5,2.5,0.5
 * With the steps defined, improving the workflow to allow for both non-technical and
   technical users.
 * After improvements were made, the next goal was to allow for automating the process of training a network.
 
-Machine Learning techniques have risen in popularity as ML has shown to be useful in providing an expert level response to predicting values, recognizing patterns, and identifying objects in images. While working through applying ML to ["SYNTHETIC CFD ESTIMATION FOR BLACKHAWK AIRFOIL DRAG COEFFICIENT"](https://doi.org/10.2514/6.2024-1230), and ["ESTIMATING KINETIC ENERGY REDUCTION FOR TERMINAL BALLISTICS"](https://link.springer.com/article/10.1007/s00521-023-09382-3) it was noted that the steps for applying ML was similiar enough to where a single workflow could be designed to handle both of these problems along with previously unexplorered problem spaces. The steps that were taken for both the rotorcraft and ballistics problem were Feature Importance, Hyperparamter optimization searching for superior model parameters, training the best models returned from hyperparamter optimization, and evaluating the performance of the best models. This documentation will describe the details of each of the previously mentioned steps. Details will also be provided on how to utilize each of the steps individually or as an automated workflow. In this documentation we will describe an automated machine learning pipeline and present results of applying the pipeline to sample problems.
+Machine Learning techniques have risen in popularity as ML has shown to be useful in providing an expert level response to predicting values, recognizing patterns, and identifying objects in images. While working through applying ML to ["SYNTHETIC CFD ESTIMATION FOR BLACKHAWK AIRFOIL DRAG COEFFICIENT"](https://doi.org/10.2514/6.2024-1230), and ["ESTIMATING KINETIC ENERGY REDUCTION FOR TERMINAL BALLISTICS"](https://link.springer.com/article/10.1007/s00521-023-09382-3), it was noted that the steps for applying ML was similiar enough to where a single workflow could be designed to handle both of these problems along with previously unexplorered problem spaces. The steps that were taken for both the rotorcraft and ballistics problem were Feature Importance, Hyperparamter optimization which is searching for superior model parameters, training the best models returned from hyperparamter optimization, and evaluating the performance of the best models. This documentation will describe the details of each of the previously mentioned steps. Details will also be provided on how to utilize each of the steps individually or as an automated workflow. In this documentation we will describe an automated machine learning pipeline and present results of applying the pipeline to sample problems.
 
 The workflow steps used to design the models used for predicting values for the Ballistics and Rotorcraft work were the same steps. Since the Ballistics work and the rotorcraft work use very different data, but the steps in the workflow were the same, a general workflow that could design ML models for many different problems was desired. Having a general method would reduce effort in the beginning stages of working on a new problem or dataset and allow for exploration of methods and techniques to create better models. The general method would also remove the need to implement each step from ground up and would improve the timeline from receiving the data to having a reasonably performing model. The method for the general workflow is called "An Automated Machine Learning Pipeline" and the method will fit the following criteria:
 
@@ -30,7 +30,7 @@ The workflow steps used to design the models used for predicting values for the 
       * [Initial Steps for Running AMPL](#initial-steps-for-running-ampl)
 3. [AMPL setup and Configuration file](#ampl-setup-and-configuration-file)
     * [Suggested directory structure for organizing AMPL](#suggested-directory-structure-for-organizing-AMPL)
-4. [AMPL Interface](#ampl-interface)
+4. [Two Methods for Interfering with AMPL](#Two-Methods-for-Interfering-with-AMPL---API,-CLI)
     * [AMPL - API](#ampl-api)
     * [AMPL - CLI](#ampl-cli)
 
@@ -72,10 +72,6 @@ pip install shap pillow requests xgboost jinja2 more_itertools optuna-integratio
 ## Setting up gitlab
 
 The user will need to setup their SSH key to git in order to pull the source code for AMPL. This step can be skipped by users who have already setup their git SSH key. This process for setting up the git SSH key will be the same whether a user is running locally or on HPC as a user will need to store an SSH key for each machine they use to access git. Instructions for setting up git are found here within the [README_git] (./README_git.md?ref_type=heads#GitLab-setup)
-
-## AMPL Interface
-
-AMPL provides two different ways in which to interface. One is through the [AMPL - API](#ampl-api) (Application Programming Interface) and the other is via [AMPL - CLI](#ampl-cli) (Command Line Interface). The API will be helpful to users wishing to run scripts that use AMPL, and the CLI will be helpful for those wishing to run AMPL without writing scripts. An example of using the CLI would be running on HPC. Both the [AMPL - API](#ampl-api) and the [AMPL - CLI](#ampl-cli) will be described in detail in their respective sections below.
 
 ### Creating AMPL Code and Run/working Directory - for both API and CLI users
 
@@ -380,8 +376,6 @@ feature_list: 'col_1'
 number_of_features: 6 
 ```
 
-<br/>
-
 The following table shows all of the variables in the `ampl_config.yml` file that require modification, their default values, and an example modification to work with the concrete data set example.
 
 | Variable           | Default Variables         | Concrete Variables                                                   |
@@ -413,8 +407,6 @@ feature_importance:
     - 'Age'
 ```
 
-\
-\
 This is what the directory structure looks like after using the examples provided in each of the previous steps in this guide and after running the concrete example code:
 
 ```shell
@@ -430,7 +422,7 @@ This is what the directory structure looks like after using the examples provide
 │   │   │   │   ├── saved_models
 ```
 
-### AMPL Interface
+### Two Methods for Interfering with AMPL - API, CLI
 
 AMPL provides two different ways to interface with it. One is through the AMPL API (Application Programming Interface) and the other is via AMPL CLI (Command Line Interface). The API will be helpful to users wishing to use scripts to run AMPL, and the CLI will be helpful for those wishing to run AMPL without writing scripts. An example of using the CLI would be running on HPC. Both the AMPL API and the AMPL CLI will be described in detail in their respective sections below.
 
