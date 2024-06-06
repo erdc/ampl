@@ -23,7 +23,7 @@ https://docs.gitlab.com/ee/user/ssh.html#add-an-ssh-key-to-your-gitlab-account
 2. Run ssh-keygen -t followed by the key type and an optional comment. This comment is included in the .pub file that’s created. You may want to use an email address for the comment.
 
 ```shell
-ssh-keygen -o -t rsa -b 4096 -C "<email@erdc.dren.mil>"
+ssh-keygen -o -t rsa -b 4096 -C "<email@myEmail.com>"
 ```
 
 3. Press Enter. Output similar to the following is displayed:
@@ -32,26 +32,17 @@ ssh-keygen -o -t rsa -b 4096 -C "<email@erdc.dren.mil>"
 
 Enter file in which to save the key `(/home/user/.ssh/id_rsa)`
 4. Accept the suggested filename and directory
-5. Create .ssh directory if it doesn't exist and edit ~/.ssh/config file to add publickey location to use
 
-```
-mkdir -m 0700 ~/.ssh
- 
-vim ~/.ssh/config
-```
-Copy and paste the following
-```
-Host git.erdc.dren.mil
-  Preferredauthentications publickey
-  IdentityFile ~/.ssh/id_rsa
-
-```
 
 ### Add SSH Key to GitLab
 1. To use SSH with GitLab, copy your public key to your GitLab account: You can do this manually, copy the contents of id_rsa.pub
 
 ```shell
+# Linux/OSX based machines
 vi /p/home/<username>>/.ssh/id_rsa.pub
+
+# Windows
+C:\Users\<myUserName>\.ssh
 ```
 
 2. Add the new SSH key in Git lab using the steps below:\
@@ -73,5 +64,5 @@ Select Add key.
 1. Access the AMPL Git repo from your browser.
 2. Once in the repo, navigate to `Settings Access Tokens` on the left-hand side of the screen.
 3. To create a new token, click `Add new token` on the ‘Project Access Tokens’ page.
-4. Give your token a name, an expiration date, select `Maintainer` as the role, check all of the boxes under `Select scopes`, and then select `Create project access token`.
+4. Give your token a name, an expiration date, select a role if asked, if provided the option check all of the boxes under `Select scopes`, and then select `Create project access token`.
 5. Be sure to save your access token somewhere once it is generated because this will be the only time it will be given to you.
