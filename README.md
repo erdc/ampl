@@ -18,12 +18,13 @@ The workflow steps used to design the models used for predicting values for the 
 * Able to run each step in the workflow as a solo component
 * Eliminate the need to manually design ML model to allow more time to be focused on adding new or enhancing existing Steps in the automated machine learning pipeline
 
-# <u> Steps to run AMPL </u>
+## Steps to run AMPL
+
 1. [Anaconda (Conda) setup](#anaconda-conda-setup)
-2. [Install AMPL](#install-ampl) 
-   * [GitLab setup](#gitlab-setup)
-      * [Option 1: Get SSH key](#option-1-get-ssh-key-recommended)
-      * [Option 2: Get HTTPS Access Token](#option-2-get-https-access-token-needed-to-clone-the-repo-as-well-as-pullpush)
+2. [Install AMPL](#install-ampl)
+   * [GitLab setup](./README_git.md?ref_type=heads#gitlab-setup)
+      * [Option 1: Get SSH key](./README_git.md?ref_type=heads#option-1-get-ssh-key-recommended)
+      * [Option 2: Get HTTPS Access Token](./README_git.md?ref_type=heads#option-2-get-https-access-token-needed-to-clone-the-repo-as-well-as-pullpush)
    * [Clone AMPL repository](#clone-ampl-repository)
    * [Install AMPL in your conda environment](#install-ampl)
       * [Initial Steps for Running AMPL](#initial-steps-for-running-ampl)
@@ -33,12 +34,11 @@ The workflow steps used to design the models used for predicting values for the 
     * [AMPL - API](#ampl-api)
     * [AMPL - CLI](#ampl-cli)
 
-# <u> Anaconda (Conda) setup </u>
+## Anaconda (Conda) setup
 
 Please download and install Anaconda python if it has not previously been installed. Installatiion instructions can be found within [README_anaconda](./README_anaconda.md?ref_type=heads#install-anaconda) if needed by the user.
 
-
-## <u> Anaconda Setup </u>
+### Anaconda Setup
 
 It is important to maintain an up-to-date version of Anaconda. Even if a user already has Anaconda, please follow the steps for Updating Conda and Anaconda. Not having an updated version of conda is the most commonly experienced error by new users.
 
@@ -69,54 +69,59 @@ python -m pip install --upgrade pip myst-parser joblib
 pip install shap pillow requests xgboost jinja2 more_itertools optuna-integration tensorflow
 ```
 
-# <u> Setting up gitlab </u>
+## Setting up gitlab
 
 The user will need to setup their SSH key to git in order to pull the source code for AMPL. This step can be skipped by users who have already setup their git SSH key. This process for setting up the git SSH key will be the same whether a user is running locally or on HPC as a user will need to store an SSH key for each machine they use to access git. Instructions for setting up git are found here within the [README_git] (./README_git.md?ref_type=heads#GitLab-setup)
 
+## AMPL Interface
 
-# <u> AMPL Interface </u>
+AMPL provides two different ways in which to interface. One is through the [AMPL - API](#ampl-api) (Application Programming Interface) and the other is via [AMPL - CLI](#ampl-cli) (Command Line Interface). The API will be helpful to users wishing to run scripts that use AMPL, and the CLI will be helpful for those wishing to run AMPL without writing scripts. An example of using the CLI would be running on HPC. Both the [AMPL - API](#ampl-api) and the [AMPL - CLI](#ampl-cli) will be described in detail in their respective sections below.
 
-## <u> Creating AMPL Code and Run/working Directory - for both API and CLI users </u>
+### Creating AMPL Code and Run/working Directory - for both API and CLI users
 
-AMPL provides two different ways to interface with it. One is through the [AMPL - API](#ampl-api) (Application Programming Interface) and the other is via [AMPL - CLI](#ampl-cli) (Command Line Interface). The API will be helpful to users wishing to run scripts that use AMPL, and the CLI will be helpful for those wishing to run AMPL without writing scripts. An example of using the CLI would be running on HPC. Both the [AMPL - API](#ampl-api) and the [AMPL - CLI](#ampl-cli) will be described in detail in their respective sections below. 
+The directory structure for working with AMPL is the same regardless of using the API or CLI method to interface with AMPL. This recommeneded directory structure will help with organization and determining where to put the AMPL repository, as well as provide a convienient way to organize the directory structure so that ML models and information (plots, statistics, etc..) are easily accessed by the user. A user can use any directory structure they would like, but will have to customize their yaml input file to account for any differences between their chosen directory structure and the recommended directory structure.
 
-## <u> Creating AMPL Code and Run/working Directory - for both API and CLI users </u>
-
-The directory structure for working with AMPL is the same regardless of using the API or CLI method to interface with AMPL. This recommeneded directory structure will help with organization and determining where to put the AMPL repository, as well as provide a convienient way to organize the directory structure so that ML models and information (plots, statistics, etc..) are easily accessed by the user. A user can use any directory structure they would like, but will have to customize their yaml input file to account for any differences between their chosen directory structure and the recommended directory structure. 
-
-### <u> Recommended directory structure </u>
+#### Recommended directory structure
 
 The user may use multiple methods for creating a directory structure, however, the example below assumes the user is working from commandline. For the example working with AMPL, we will use an open-source concrete dataset. When a user is working with their own data they should rename any references to 'concrete' with their own dataset name.
 
-1.  Create a parent folder for AMPL Code
+1. Create a parent folder for AMPL Code
 
 ```shell
 # ex: $ mkdir <ampl_dir> 
 mkdir AMPL
 ```
-2.  Move into the <ampl_dir>
+
+2. Move into the <ampl_dir>
+
 ```shell
 # ex: cd <ampl_dir> 
 cd AMPL 
 ```
 
-3.	Create AMPL repository code directory:
+3. Create AMPL repository code directory:
+
 ```shell
 # whatever you would like to name your designated AMPL repository code directory 
 # ex: mkdir <ampl_code_dir>
 mkdir code
 ```
+
 4. Create directory for AMPL runs:
+
 ```shell
 # whatever you would like to name your directory to hold all of the AMPL runs.
 # ex: mkdir <all_run_dir> 
 mkdir all_run_dir
 ```
+
 5. Move into the <all_run_dir>
+
 ```shell
 # ex: cd <all_run_dir> 
 cd all_run_dir
 ```
+
 6. Create directory for a specific run of AMPL:
 
 ```shell
@@ -126,14 +131,14 @@ cd all_run_dir
 # ex: mkdir <dataset#_run_dir>
 mkdir concrete_run_dir
 ```
+
 Note: Repeat step six to create the structure to maintain the data for different data sets and runs. Example directory structure is provided below.
 
-
-### <u> Example Directory Structure </u>
+#### Example Directory Structure
 
 The following is an example directory structure of what AMPL will look like when the code is downloaded and a user is working with multiple datasets. This example shows where the ampl code is located, and provides two examples of where the run data is stored. The first example the user has a csv file and uses one yaml file for specifying how AMPL will run. The second example the user has a sqlite data file and two different yaml files for specifying how AMPL with run when working with the same dataset. AMPL will accept both csv and sqlite data, however, the user will need to modify the yaml file based on which type of data is being used. Examples for working with csv or sqlite are provided below.
 
-Note: When working with AMPL, the normal use case is to create a Folder named 'AMPL' to store everything. This folder is the root folder and should be the folder a user opens when working with AMPL whether through the [API](#ampl-api) or through the [command-line option](ampl-cli). 
+Note: When working with AMPL, the normal use case is to create a Folder named 'AMPL' to store everything. This folder is the root folder and should be the folder a user opens when working with AMPL whether through the [API](#ampl-api) or through the [command-line option](ampl-cli).
 
 ```shell
 ├── <ampl_dir>
@@ -155,13 +160,9 @@ Note: When working with AMPL, the normal use case is to create a Folder named 'A
 │   │   │   ├── <config_file2.yml>
 ```
 
+### Clone AMPL repository
 
-
-
-
-## <u> Clone AMPL repository </u>
-
-1.	Navigate to your AMPL repository code directory <ampl_code_dir> created in the previous step []():
+1. Navigate to your AMPL repository code directory <ampl_code_dir> created in the previous step []():
 
 ```shell
 # ex: cd <ampl_dir>/<ampl_code_dir>
@@ -175,19 +176,20 @@ cd code
 
 ```
 
-4.  Go to the AMPL Git repo page in your browser, select Code and then there will be two options to `Clone`. Copy the URL based on the SSH Key or HTTPS option that you are using. Use the following command to clone the repo into your AMPL working directory:
+4. Go to the AMPL Git repo page in your browser, select Code and then there will be two options to `Clone`. Copy the URL based on the SSH Key or HTTPS option that you are using. Use the following command to clone the repo into your AMPL working directory:
 
 ```shell
 # example using ssh:
 # ex: git clone <copied URL>
 
-git clone git@public.git.erdc.dren.mil:ampl/ampl.git
+git clone git@github.com:erdc/ampl.git
 
-``` 
+```
 
-Note: If you don't have access or are getting a permission error from Git, please refer to [get ssh key](#option-1-get-ssh-key-recommended)
+Note: If you don't have access or are getting a permission error from Git, please refer to [Option 1: Get SSH key](./README_git.md?ref_type=heads#option-1-get-ssh-key-recommended)
 
-### <u> Install AMPL in your conda environment </u>
+#### Install AMPL in your conda environment
+
  Note for Windows users: Please open Anaconda power shell as an administrator for the commands to work.
 
 1. Activate the conda environement you created previously while installing Anaconda.
@@ -223,22 +225,21 @@ python -m unittest test_pipeline_nn
 
 The command above that tests the pipeline connection does a small test to confirm if the connections are set up properly.  It starts with using Optuna to find the best trial and then runs 10 epochs to train that best trial.  After it is done running, it displays the reuslts of the test in a table that includes the layer type, output shape, and number of parameters. Below the table are more detials about the parameters that are used in the test run.
 
-## <u> AMPL setup and Configuration file </u>
+### AMPL setup and Configuration file
 
-### <u> Initial Steps for Running AMPL </u>
+#### Initial Steps for Running AMPL
 
-AMPL utilizes configuration file(s) to setup a study/run. 
+AMPL utilizes configuration file(s) to setup a study/run.
 
 When AMPL is executed, a .yaml file must be passed in as an argument for running in either CLI or API mode. The .yaml file contains a path to the location of the input data, which is used for training, validation, testing, as well as the path to the results directory. The location of these directories are relative to the aforementioned path provided in the .yaml in addition to many other configuration settings.
 
-
 [Default Config File](./src/ampl/default_config.yml)
 
-### <u> Suggested directory structure for organizing AMPL </u>
+#### Suggested directory structure for organizing AMPL
 
 You will want to create a directory for your specific AMPL run to keep your runs organized, especially if you will be running AMPL on multiple datasets. This is where all your project related folders should be created and where your ampl_config.yml should reside. We recommend creating a separate folder to store data within it and refer to it in the config file.
 
-1.	Navigate to your AMPL running directory.  The run directory is typically located in the home directory <ampl_run_dir>, previously refered to as AMPL/all_run_dir in examples:
+1. Navigate to your AMPL running directory.  The run directory is typically located in the home directory <ampl_run_dir>, previously refered to as AMPL/all_run_dir in examples:
 
 ```shell
 # ex: cd <ampl_dir>/<ampl_run_dir>
@@ -255,7 +256,7 @@ cd all_run_dir
   
 ```
 
-2.	Create a directory for your run and navigate to this directory.  Use a name that indentifies the dataset you will be using. Since the example that we will be using is based on a concrete dataset, we will name the directory appropriately:
+2. Create a directory for your run and navigate to this directory.  Use a name that indentifies the dataset you will be using. Since the example that we will be using is based on a concrete dataset, we will name the directory appropriately:
 
 ```shell
 # ex: mkdir <dataset_run_dir>
@@ -267,8 +268,10 @@ mkdir concrete_run_dir
   │   ├── all_run_dir
 ->│   │   ├── concrete_run_dir
 
-``` 
+```
+
 3. Move into the <concrete_run_dir> directory:
+
 ```shell
 # ex: cd <dataset_run_dir> 
 cd concrete_run_dir
@@ -280,8 +283,10 @@ cd concrete_run_dir
 ->│   │   ├── concrete_run_dir
 
 ```
-4.	Create a directory to hold your data:
-```shell 
+
+4. Create a directory to hold your data:
+
+```shell
 # ex: mdir <data_dir>
 mkdir concrete_data
 
@@ -294,7 +299,7 @@ mkdir concrete_data
 
 ```
 
-5.	Copy your dataset to the <data_dir> directory. Please have the data in a SQLite or a CSV file type.  Most datasets can easily be converted into CSV format, but be sure that the index column is not included.
+5. Copy your dataset to the <data_dir> directory. Please have the data in a SQLite or a CSV file type.  Most datasets can easily be converted into CSV format, but be sure that the index column is not included.
 
 As an example data set moving forward, we will be utilizing a public concrete data set. Copy the "concrete.csv" file from "AMPL\code\ampl\tests\data\concrete.csv"  to the concrete_data folder created in the previous step. The below folder sructre shows where the concrete.csv data file shoud go.
 
@@ -309,13 +314,13 @@ As an example data set moving forward, we will be utilizing a public concrete da
 ```
 
 A direct link can be found to the example concrete dataset at the following link:
-  https://archive.ics.uci.edu/dataset/165/concrete+compressive+strength
+  <https://archive.ics.uci.edu/dataset/165/concrete+compressive+strength>
 
-  Yeh,I-Cheng. (2007). Concrete Compressive Strength. UCI Machine Learning Repository. https://doi.org/10.24432/C5PK67.
+  Yeh,I-Cheng. (2007). Concrete Compressive Strength. UCI Machine Learning Repository. <https://doi.org/10.24432/C5PK67>.
 
-6.	Create a default configuration file:
+6. Create a default configuration file:
 
-  Run the following code from within the <concrete_run_dir> directory in the terminal. The following command is using the CLI method of interfacing with ampl. 
+  Run the following code from within the <concrete_run_dir> directory in the terminal. The following command is using the CLI method of interfacing with ampl.
 
   ```shell
 
@@ -331,11 +336,10 @@ A direct link can be found to the example concrete dataset at the following link
   ->│   │   │   ├── ampl_config.yml
   ```
 
-
-7.  Edit the `ampl_config.yml` file by filling in all the required fields.
+7. Edit the `ampl_config.yml` file by filling in all the required fields.
 
 The following block of code provides a description of the variables that require user modification in the ampl_config.yml. A table is provided later in this step that shows the edits to the yaml file for the example using the concrete dataset. When using a different dataset, please refer back to the table in this section as a quick reference for the variables you will need to modify when applying ampl to a different dataset.
-    
+
 ```shell
 # A name that describes what the study is about and needs to be unique.
 study_name: 'your_study_name'  
@@ -375,10 +379,10 @@ feature_list: 'col_1'
 # The number of columns used as features in the dataset, not including the target variable
 number_of_features: 6 
 ```
+
 <br/>
 
-The following table shows all of the variables in the `ampl_config.yml` file that require modification, their default values, and an example modification to work with the concrete data set example. 
-
+The following table shows all of the variables in the `ampl_config.yml` file that require modification, their default values, and an example modification to work with the concrete data set example.
 
 | Variable           | Default Variables         | Concrete Variables                                                   |
 | :----------------- | :------------------------ | :----- |
@@ -408,6 +412,7 @@ feature_importance:
     - 'Fine Aggregate'
     - 'Age'
 ```
+
 \
 \
 This is what the directory structure looks like after using the examples provided in each of the previous steps in this guide and after running the concrete example code:
@@ -425,16 +430,15 @@ This is what the directory structure looks like after using the examples provide
 │   │   │   │   ├── saved_models
 ```
 
-## <u> AMPL Interface </u>
+### AMPL Interface
 
-AMPL provides two different ways to interface with it. One is through the AMPL API (Application Programming Interface) and the other is via AMPL CLI (Command Line Interface). The API will be helpful to users wishing to use scripts to run AMPL, and the CLI will be helpful for those wishing to run AMPL without writing scripts. An example of using the CLI would be running on HPC. Both the AMPL API and the AMPL CLI will be described in detail in their respective sections below. 
+AMPL provides two different ways to interface with it. One is through the AMPL API (Application Programming Interface) and the other is via AMPL CLI (Command Line Interface). The API will be helpful to users wishing to use scripts to run AMPL, and the CLI will be helpful for those wishing to run AMPL without writing scripts. An example of using the CLI would be running on HPC. Both the AMPL API and the AMPL CLI will be described in detail in their respective sections below.
 
-### <u> AMPL API </u>
+#### AMPL API
 
-The AMPL API will provide the user with the means to interface with AMPL through scripts. This type of interface is useful for creating scripts to run AMPL as part of a workflow. In the next section we will show an example of using a script that uses the AMPL API. 
+The AMPL API will provide the user with the means to interface with AMPL through scripts. This type of interface is useful for creating scripts to run AMPL as part of a workflow. In the next section we will show an example of using a script that uses the AMPL API.
 
-
-#### <u> Getting started API </u>
+##### Getting started API
 
 The following script will use AMPL to create a fully dense neural network using the previously created [folder structure](#Suggested-directory-structure-for-organizing-AMPL), and example downloaded concrete.csv dataset. This script is available in the examples folder under [examples/concrete_example.py]("./examples/concrete_example.py")
 
@@ -527,18 +531,22 @@ pipeline_nn.eval.run()
 
 ```
 
-### <u> AMPL CLI </u>
+#### AMPL CLI
 
-The AMPL CLI will provide an easy to use means for calling AMPL functionality through the command line. The CLI is helpful when the user doesn't want to write scripts to call AMPL, but wants to call the functions of AMPL. An example application of using the CLI would be to run AMPL on HPC. 
+The AMPL CLI will provide an easy to use means for calling AMPL functionality through the command line. The CLI is helpful when the user doesn't want to write scripts to call AMPL, but wants to call the functions of AMPL. An example application of using the CLI would be to run AMPL on HPC.
 
-#### <u> Getting started CLI </u>
+##### Getting started CLI
+
 Once AMPL is installed in your conda env, use a terminal to run AMPL.
 
 AMPL CLI help - To display the AMPL CLI help use the following command
+
 ```shell
 python -m ampl -h
 ```
+
 It will display similar text as shown below, this text may differ as the application matures
+
 ```text
 usage: FAIT AMPL package [-h] [-d] [-c] [-dt] [-o] [-b] [-ev] [-en]
                          config_file
@@ -559,7 +567,7 @@ optional arguments:
   -en, --ensemble       Run Ensemble Model step
 ```
 
-#### <u> Run AMPL using CLI </u>
+##### Run AMPL using CLI
 
 From the terminal run the following commands. The examples assume that steps were taken to create the following directory structure:
 
@@ -583,10 +591,3 @@ However, if you would like to run a single step within the pipeline, you can use
 cd concrete_run_dir #cd <dataset1_run_dir>
 python -m ampl ampl_config.yml -b -ev
 ```
-
-
-
-
-
-
-
