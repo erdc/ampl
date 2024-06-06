@@ -158,7 +158,7 @@ Note: When working with AMPL, the normal use case is to create a Folder named 'A
 
 ### Clone AMPL repository
 
-1. Navigate to your AMPL repository code directory <ampl_code_dir> created in the previous step []():
+1. Navigate to your AMPL repository code directory <ampl_code_dir> created in the previous step [Recommended directory structure](#recommended-directory-structure):
 
 ```shell
 # ex: cd <ampl_dir>/<ampl_code_dir>
@@ -172,7 +172,7 @@ cd code
 
 ```
 
-4. Go to the AMPL Git repo page in your browser, select Code and then there will be two options to `Clone`. Copy the URL based on the SSH Key or HTTPS option that you are using. Use the following command to clone the repo into your AMPL working directory:
+4. Go to the AMPL Git repo page in your browser, select Code and then there will be two options to `Clone`. Copy the URL based on whether you are using the SSH Key or HTTPS option (SSH is recommended). Use the following command to clone the repo into your AMPL working directory:
 
 ```shell
 # example using ssh:
@@ -198,8 +198,21 @@ conda activate ampl
 2. Install the needed packages.
 
 ```shell
+
+# Navigate to the inside the code folder. 
+  ├── AMPL
+->│   ├── code
+
 # ex: pip install -e <ampl_code_dir>
 pip install -e ampl
+```
+
+If the install was successful then you will see soemthing similiar to:
+
+```shell
+   Successfully built ampl
+   Installing collected packages: ampl
+   Successfully installed ampl-0.0.3
 ```
 
 Test AMPL in your env by running the following:

@@ -1,6 +1,6 @@
 # Running AMPL on Carpenter
 
-The following guide is for running AMPL on the HPC Carpenter. The general steps to running AMPL on Additional HPC machines will be the same
+The following guide is for running AMPL on the HPC Carpenter. Users must have access for carpenter for this guide to be helpful. However, users may examine this file for a general guideline of what steps they need to take to get AMPL on a HPC machine in which they have access. The general steps to running AMPL on Additional HPC machines will be the same.
 
 
 ## General steps to running AMPL on HPC
@@ -111,7 +111,6 @@ cd $WORKDIR
 Please follow the following guide for setting up the AMPL directory structure in the README. The setps in the section will walk the user through creating the propor directory structure along with downloading the sample concrete dataset and setting up the .yml file.
 
 [Suggested directory structure for organizing AMPL](./README.md?ref_type=heads#Create-the-AMPL-directory-structure)
-
 
 The proper AMPL directory structure should now look like the following if all steps in the "Create the AMPL directory structure" were followed. Do note that the user may use different names for the folders and files in this directory structure, but will have to rename file paths accordingly so it is not recommended until after gaining experience in working with AMPL.
 
