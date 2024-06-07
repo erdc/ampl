@@ -208,9 +208,10 @@ class Data:
         Accepts a dataframe and list of columns that need to be converted from numerical to str.
         The return is a dataframe with the columns converted.
         """
-        for col in self.cols_to_enum:
-            if col in df_.columns: # checking if enum column is actually in the final dataframe after feature importance
-                df_[col] = pd.DataFrame(self.encoders[col].inverse_transform(df_[[col]]), columns=[col])
+        if self.cols_to_enum is not None:
+            for col in self.cols_to_enum:
+                if col in df_.columns: # checking if enum column is actually in the final dataframe after feature importance
+                    df_[col] = pd.DataFrame(self.encoders[col].inverse_transform(df_[[col]]), columns=[col])
             
         return df_
 
