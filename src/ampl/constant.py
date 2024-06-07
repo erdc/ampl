@@ -60,6 +60,7 @@ class Constant(object):
 
     MODEL_EXT_DT: Final[str] = '.json'
     MODEL_EXT_NN: Final[str] = '.keras'
+    CSV_EXT: Final[str] = '.csv'
     HISTORY_EXT: Final[str] = '_history.pickle'
 
     ERROR_PERCENTAGES: Final[Tuple[int]] = (20, 10, 5, 2.5, 1, 0.5)

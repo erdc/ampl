@@ -11,6 +11,7 @@ from ampl.pipelinestep import PipelineStep
 from ampl.constant import Constant as C
 
 import logging
+import pandas as pd
 
 logger = logging.getLogger(__name__)
 
@@ -77,6 +78,12 @@ class ModelEval(PipelineStep):
             y_train_pred = self.data.denormalize_y(y_train_pred)
             y_test_pred = self.data.denormalize_y(y_test_pred)
             y_val_pred = self.data.denormalize_y(y_val_pred)
+            
+            # Print Predictions
+            predictions = self.data.denormalize(pd.DataFrame(X_val, columns=self.data.df_X.columns))
+            predictions[self.data.target_variable] = y_val
+            predictions[self.data.target_variable + '_pred'] = y_val_pred
+            predictions.to_csv(self.state.results_directory + 'model_predictions_' + self.state.model_name + '_' + str(j) + C.CSV_EXT, index=False)
 
             # Mean Absolute Error
             mae = mean_absolute_error(y_val, y_val_pred)

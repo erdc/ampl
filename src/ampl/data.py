@@ -170,15 +170,14 @@ class Data:
         # calculate target column, if necessary. Otherwise convert target column to the 'float' datatype
         if self.target_col_function:
             self.df[self.target_variable] = self.target_col_function(self.df_X)
-
+            
         if self.df_y is not None:
             self.df[self.target_variable] = self.df_y.astype('float')
 
             self.target_stats = self.df_y[self.target_variable].describe()
 
         # Normalize df between 0 and 1
-        # if self.normalize_data:
-        self.df = Data.normalize(self.df)
+        self.normalize()
 
         if self.feature_importance:
             self.feature_importance_list = self.feature_importance.run(self.df_X, self.df_y.squeeze())
@@ -198,23 +197,33 @@ class Data:
         Accepts a dataframe and list of columns that need to be converted from string to enum.
         The return is a dataframe with the columns converted.
         """
-        df_enum = self.df[self.cols_to_enum]
-        encoder = OrdinalEncoder().set_output(transform="pandas")
-        df_enum = encoder.fit_transform(df_enum)
-        self.df[self.cols_to_enum] = df_enum[self.cols_to_enum]
+        self.encoders = {}
+        for col in self.cols_to_enum:
+            self.encoders[col] = OrdinalEncoder().set_output(transform="pandas")
+            self.df[col] = self.encoders[col].fit_transform(self.df[[col]])
+        
+    def decode_enum(self, df_):
+        """
+        Coverts data that was enumerated back to categorical data
+        Accepts a dataframe and list of columns that need to be converted from numerical to str.
+        The return is a dataframe with the columns converted.
+        """
+        for col in self.cols_to_enum:
+            if col in df_.columns: # checking if enum column is actually in the final dataframe after feature importance
+                df_[col] = pd.DataFrame(self.encoders[col].inverse_transform(df_[[col]]), columns=[col])
+            
+        return df_
 
-    @staticmethod
-    def normalize(df):
+    def normalize(self):
         """
         Normalizes the df between 0 and 1.
         """
-        stats = df.describe()
-        if len(stats.columns) != len(df.columns):
+        self.stats = self.df.describe()
+        if len(self.stats.columns) != len(self.df.columns):
             raise ValueError("Dataframe includes string data which was not enumerated")
-        for col in df:
-            df[col] = df[col].apply(
-                lambda x: (x - stats[col]['min']) / (stats[col]['max'] - stats[col]['min']))
-        return df
+        for col in self.df:
+            self.df[col] = self.df[col].apply(
+                lambda x: (x - self.stats[col]['min']) / (self.stats[col]['max'] - self.stats[col]['min']))
 
     # Denormalize for evaluation
     def denormalize_y(self, y):
@@ -228,6 +237,17 @@ class Data:
         """
         return y * (self.target_stats['max'] - self.target_stats['min']) + self.target_stats['min']
 
+    def denormalize(self, df_):
+        """
+        Denormalizes the input for printing predictions.
+        """
+        for col in df_:
+            df_[col] = df_[col].apply(
+                lambda x: x * (self.stats[col]['max'] - self.stats[col]['min']) + self.stats[col]['min'])
+        
+        df_ = self.decode_enum(df_)    
+        
+        return df_
 
 def read_csv(csv_file: Union[str, Path], target_variable: str,
              feature_importance: FeatureImportance = None,
