@@ -112,7 +112,9 @@ Please follow the following guide for setting up the AMPL directory structure in
 
 
   !!!!!! DO NOT MISS THIS LINK TO SET UP THE DIRECTORY STRUCTURE AND FOR CREATING THE YAML FILE !!!!!!
-[Suggested directory structure for organizing AMPL](./README.md?ref_type=heads#Suggested-directory-structure-for-organizing-AMPL)
+  
+  [Suggested directory structure for organizing AMPL](./README.md?ref_type=heads#Suggested-directory-structure-for-organizing-AMPL)
+  
   !!!!!! DO NOT MISS THIS LINK TO SET UP THE DIRECTORY STRUCTURE AND FOR CREATING THE YAML FILE !!!!!!
 
 
