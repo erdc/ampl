@@ -111,15 +111,15 @@ cd $WORKDIR
 Please follow the following guide for setting up the AMPL directory structure in the README. The setps in the section will walk the user through creating the propor directory structure along with downloading the sample concrete dataset and setting up the .yml file.
 
 
-  !!!!!! DO NOT MISS THIS LINK TO SET UP THE DIRECTORY STRUCTURE AND FOR CREATING THE YAML FILE !!!!!!
+  !!!!!! DO NOT MISS THIS LINK TO SET UP THE DIRECTORY STRUCTURE AND FOR CREATING THE YAML FILE. FOLLOW ALL 7 STEPS !!!!!!
   
-  [Suggested directory structure for organizing AMPL](./README.md?ref_type=heads#Suggested-directory-structure-for-organizing-AMPL)
+  [Suggested directory structure for organizing AMPL](./README.md?ref_type=heads#Recommended-directory-structure)
   
-  !!!!!! DO NOT MISS THIS LINK TO SET UP THE DIRECTORY STRUCTURE AND FOR CREATING THE YAML FILE !!!!!!
+  !!!!!! DO NOT MISS THIS LINK TO SET UP THE DIRECTORY STRUCTURE AND FOR CREATING THE YAML FILE FOLLOW ALL 7 STEPS!!!!!!
 
 
 
-The proper AMPL directory structure should now look like the following if all steps in the "Create the AMPL directory structure" were followed. Do note that the user may use different names for the folders and files in this directory structure, but will have to rename file paths accordingly so it is not recommended until after gaining experience in working with AMPL.
+The proper AMPL directory structure should now look like the following if all 7 steps in the "Recommended directory structure" were followed. Do note that the user may use different names for the folders and files in this directory structure, but will have to rename file paths accordingly so it is not recommended until after gaining experience in working with AMPL.
 
 ```shell
   # the current folder structure should look like this 
