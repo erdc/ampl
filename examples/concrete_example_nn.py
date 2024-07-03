@@ -7,6 +7,9 @@
     
     Note: If the user needs/wants to use the api to create a yaml file, run 
         examples/create_config_api_example.py
+        
+    Note: This file assumes the user is in the 'AMPL' home directory. Since paths are relative a user will need to adjust
+    file paths if the code is run from a different location.
 '''
 
 from ampl import *
@@ -20,12 +23,14 @@ filename = 'ampl_config.yml'
 # comments at the top of this file for an example directory structure
 work_dir = './all_run_dir/concrete_run_dir/'
 
-# This will reset the running directory to concrete_run_dir
-os.chdir(work_dir)
-
 # Print the files located at the relative path. This will help with finding the yml 
 # file if a user receives file not found while trying to work with relative paths.
-#Util.relativePathHelper(work_dir)
+# This line will print out the directory two levels above where this file is located. 'all_run_dir' should be
+# in the list printed
+#Util.relativePathHelper('../../')
+
+# This will reset the running directory to concrete_run_dir
+os.chdir(work_dir)
 
 config = Configuration(filename)
 
