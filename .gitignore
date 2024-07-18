@@ -37,3 +37,5 @@ docs/
 /tests/data/dataset_temp.sqlite
 /tests/data/temp.sqlite
 hpc.bat
+data/
+results_*
