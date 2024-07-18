@@ -399,7 +399,6 @@ The following table shows all of the variables in the `ampl_config.yml` file tha
 | data_file          | null                      | null |
 | data_table_name    | null                      | null |
 | csv_file           | 'path_to_CSV'             | 'concrete_data/concrete.csv' |
-| csv_normalized_file| 'path_to_CSV_normalized'  | 'concrete_data/concrete_normalized.csv' |
 | cols_to_enum       | null                      | null |
 | feature_list       | null                      | - 'Cement' - 'Blast Furnace Slag' - 'Fly Ash' - 'Water' - 'Superplasticizer' - 'Coarse Aggregate' - 'Fine Aggregate' - 'Age' |
 | number_of_features | 6                         | 8 |
