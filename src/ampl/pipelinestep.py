@@ -23,7 +23,7 @@ class PipelineStep(object):
     def __init__(self,
                  name: str,
                  state: State,
-                 key: Literal[C.OPTUNA_NN, C.OPTUNA_DT]) -> None:
+                 key: Literal[C.NN, C.DT]) -> None:
         """
             Create the ensemble of good models to perform predictions with. This code requires models to be in
             the database to perform different ensemble methods.
@@ -68,9 +68,18 @@ class PipelineStep(object):
         best_trial_df = None
         top_trials_df = None
 
-        if self.key in full_journal:
-            best_trial_df = pd.DataFrame.from_records([full_journal[self.key].get(C.BEST_TRIAL)])
-            top_trials_df = pd.DataFrame.from_records(full_journal[self.key].get(C.TOP_TRIALS))
+        key_ = None
+        match self.key:
+            case  C.NN:
+                key_ = C.OPTUNA_NN
+            case  C.CNN:
+                key_ = C.OPTUNA_CNN
+            case  C.DT:
+                key_ = C.OPTUNA_DT
+
+        if key_ in full_journal:
+            best_trial_df = pd.DataFrame.from_records([full_journal[key_].get(C.BEST_TRIAL)])
+            top_trials_df = pd.DataFrame.from_records(full_journal[key_].get(C.TOP_TRIALS))
 
         return best_trial_df, top_trials_df
 

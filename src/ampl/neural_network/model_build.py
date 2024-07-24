@@ -42,7 +42,7 @@ class PipelineModelBuild(PipelineStep):
     verbose: int = 0
 
     def __post_init__(self):
-        super().__init__(C.BUILD_NN, self.state, C.OPTUNA_NN)
+        super().__init__(C.BUILD_NN, self.state, C.NN)
         tf = UtilNN.load_tensorflow()
         self.loss = self.loss.value
         if self.early_stopping is None:

@@ -54,9 +54,13 @@ class State:
         journal[C.SAVED_MODELS_DIR] = self.saved_models_directory
         journal[C.PLOTS_DIR] = self.plots_directory
         journal[C.DATA] = asdict(self.data)
+
+        # removing dataframe from journal
         journal[C.DATA].pop(f"{self.data.df=}".split("=")[0].split('.')[-1])  # removing dataframe from journal
         journal[C.DATA].pop(f"{self.data.target_col_function=}".split("=")[0].split('.')[-1])  # removing from journal
         journal[C.DATA].pop(f"{self.data.feature_importance=}".split("=")[0].split('.')[-1])  # removing from journal
+        journal[C.DATA].pop(f"{self.data.encoders=}".split("=")[0].split('.')[-1])  # removing from journal
+
         journal[C.DATA][C.FEATURE_IMPORTANCE] = asdict(self.data.feature_importance)
         journal[C.DATA][C.FEATURE_IMPORTANCE].pop(f"{self.data.feature_importance.results_df=}".split("=")[0].split('.')[-1])
         journal[C.DATA][C.FEATURE_IMPORTANCE][C.RESULTS] = self.data.feature_importance.results_df.to_dict()

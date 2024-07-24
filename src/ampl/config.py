@@ -6,7 +6,7 @@ from jinja2 import Template, Undefined
 from ampl.util import Util
 from ampl.enums import *
 from ampl.state import State
-from ampl.data import Data, Database, read_csv, read_sql
+from ampl.data import Data, Database, read_csv, read_sql, read_pre_split_csv, read_pre_split_sql
 from ampl.feature_importance import FeatureImportance
 import ampl.neural_network.pipeline
 import ampl.decision_tree.pipeline
@@ -85,6 +85,7 @@ class Configuration(dict):
         """
 
         """
+
         ### https://stackoverflow.com/a/47706517/2152935
         def __getattr__(self, key):
             return ''
@@ -111,12 +112,16 @@ class Configuration(dict):
             cols_to_enum = self['data']['cols_to_enum']
             target_variable = self['model']['target_variable']
             csv_file = self['data']['csv_file']
+
             # normalize_data = self['data']['normalize_data']
             table_name = self['data']['data_table_name']
             db = self['db']['data_file']
+
+            pre_split = self['data'].get('pre_split', None)
+
             feature_importance = self.create_feature_importance()
             train_size = self['data']['train_frac']
-            remaining_size = (1.0-train_size)/2.0
+            remaining_size = (1.0 - train_size) / 2.0
             # if val_frac or test_frac not set then split the remaining size between them equally
             val_size = self['data'].get('val_frac', remaining_size)
             test_size = self['data'].get('test_frac', remaining_size)
@@ -132,7 +137,35 @@ class Configuration(dict):
                                      val_size=val_size,
                                      test_size=test_size
                                      )
-            else:
+            elif pre_split:
+                pre_split_csv = pre_split.get('csv', None)
+                pre_split_sql = pre_split.get('sql', None)
+
+                if pre_split_csv:
+                    train_csv_file = pre_split_csv['train']
+                    test_csv_file = pre_split_csv['test']
+                    val_csv_file = pre_split_csv['val']
+
+                    self.data = read_pre_split_csv(train_csv_file, test_csv_file, val_csv_file,
+                                                   target_variable,
+                                                   cols_to_enum=cols_to_enum,
+                                                   feature_importance=feature_importance,
+                                                   target_col_function=self.target_col_function,
+                                                   )
+
+                elif pre_split_sql:
+                    train_sql = pre_split_sql['train']
+                    test_sql = pre_split_sql['test']
+                    val_sql = pre_split_sql['val']
+
+                    self.data = read_pre_split_sql(train_sql, test_sql, val_sql,
+                                                   target_variable,
+                                                   db_file=db,
+                                                   cols_to_enum=cols_to_enum,
+                                                   feature_importance=feature_importance,
+                                                   target_col_function=self.target_col_function,
+                                                   )
+            elif table_name:
                 self.data = read_sql(table_name, db,
                                      target_variable,
                                      cols_to_enum=cols_to_enum,

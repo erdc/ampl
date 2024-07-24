@@ -35,7 +35,7 @@ class PipelineModelEnsemble(PipelineStep):
     num_points: int = field(default=None, init=False)
 
     def __post_init__(self):
-        super().__init__(C.ENSEMBLE_NN, self.state, C.OPTUNA_NN)
+        super().__init__(C.ENSEMBLE_NN, self.state, C.NN)
         self._ensemble_mode = self.ensemble_mode.value
 
     @staticmethod

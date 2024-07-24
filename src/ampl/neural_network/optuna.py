@@ -80,7 +80,7 @@ class PipelineOptuna(OptunaStep):
     """ Number of parallel processes to use in Optuna study, set -1 to use what's available, default set to -1"""
 
     def __post_init__(self):
-        super().__init__(C.OPTUNA_NN, self.state, C.OPTUNA_NN)
+        super().__init__(C.OPTUNA_NN, self.state, C.NN)
 
         self.activations = process_enums_list(self.activations)
         self.optimizers = process_enums_list(self.optimizers)
@@ -274,7 +274,7 @@ class PipelineOptuna(OptunaStep):
         logger.debug(f'training fraction = {self.data.train_size}')
         logger.debug(f'test_size = { (self.data.test_size + self.data.val_size)}')
 
-        X_train, X_test, y_train, y_test = self.data.train_test_split(random_state=random_state)
+        X_train, _, X_test, y_train, _, y_test = self.data.train_val_test_split()
 
         self.journal[C.TRAINING_POINTS] = X_train.shape[0]
         self.journal[C.TESTING_POINTS] = X_test.shape[0]

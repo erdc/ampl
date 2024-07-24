@@ -26,7 +26,7 @@ class PipelineModelEnsemble(PipelineStep):
     num_points: int = field(default=None, init=False)
 
     def __post_init__(self):
-        super().__init__(C.ENSEMBLE_DT, self.state, C.OPTUNA_DT)
+        super().__init__(C.ENSEMBLE_DT, self.state, C.DT)
         self._ensemble_mode = self.ensemble_mode.value
 
     def run(self, random_state: int = 0 ):

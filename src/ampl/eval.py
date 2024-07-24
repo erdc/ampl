@@ -20,7 +20,7 @@ class ModelEval(PipelineStep):
     def __init__(self,
                  name: str,
                  state: State,
-                 key: Literal[C.OPTUNA_NN, C.OPTUNA_DT]) -> None:
+                 key: Literal[C.NN, C.DT, C.CNN]) -> None:
         super().__init__(name, state, key)
 
     @classmethod
@@ -169,7 +169,7 @@ class ModelEval(PipelineStep):
         plt.grid(alpha=0.15)
         plt.legend()
         fig.savefig(
-            self.state.plots_directory + 'actual-vs-predicted_' + self.state.model_name + '_top_' + str(j) + '.png')
+            f'{self.state.plots_directory}{self.key}_actual-vs-predicted_{self.state.model_name}_top_{j}.png')
         plt.close()
 
     def percent_error_plot(self, j, perc_error, perc_text, y_val):

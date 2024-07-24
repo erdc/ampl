@@ -2,6 +2,11 @@ from typing import Final, Tuple
 
 
 class Constant(object):
+    NN : Final[str] = 'NN'
+    DT : Final[str] = 'DT'
+    CNN : Final[str] = 'CNN'
+
+
     TARGET_VARIABLE: Final[str] = 'target_variable'
     BUILD_NN: Final[str] = 'build_nn'
     OPTUNA_NN: Final[str] = 'optuna_nn'
@@ -12,6 +17,11 @@ class Constant(object):
     OPTUNA_DT: Final[str] = 'optuna_dt'
     EVALUATE_DT: Final[str] = 'eval_dt'
     ENSEMBLE_DT: Final[str] = 'ensemble_dt'
+
+    BUILD_CNN: Final[str] = 'build_cnn'
+    OPTUNA_CNN: Final[str] = 'optuna_cnn'
+    EVALUATE_CNN: Final[str] = 'eval_cnn'
+    ENSEMBLE_CNN: Final[str] = 'ensemble_cnn'
 
     TOTAL_POINTS: Final[str] = 'total_points'
     TRAINING_POINTS: Final[str] = 'training_points'

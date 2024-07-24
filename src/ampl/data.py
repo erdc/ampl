@@ -1,11 +1,12 @@
 # df.py
+from abc import abstractmethod
 from dataclasses import dataclass, field
 import sqlite3
 import time
 from contextlib import contextmanager
 from pathlib import Path
-from typing import Callable, Union, Optional, Literal, List, Any
-from sklearn.preprocessing import OrdinalEncoder
+from typing import Callable, Union, Optional, Literal, List, Any, Dict
+from sklearn.preprocessing import OrdinalEncoder, LabelEncoder
 
 import pandas as pd
 from sklearn.model_selection import train_test_split
@@ -52,8 +53,22 @@ class Database:
             conn.close()
 
 
+class IData:
+    """
+    Data Interface
+    """
+
+    @abstractmethod  # The innermost decorator
+    def train_test_split(self, *args, **kwargs) -> object:
+        raise NotImplementedError
+
+    @abstractmethod  # The innermost decorator
+    def train_val_test_split(self, *args, **kwargs) -> object:
+        raise NotImplementedError
+
+
 @dataclass
-class Data:
+class Data(IData):
     """
     Data class encapsulates all the input data related functionalities, functions such as IO operations,
     normalization, standardization, and feature importance study
@@ -69,9 +84,6 @@ class Data:
 
     cols_to_enum: List[str] = field(default_factory=list)
     """ Columns to enumerate, takes the identified categorical columns and converts it to ordinal(numerical)"""
-    #
-    # normalize_data: bool = True
-    # """ Is the data normalized, if True(default) then normalization won't be applied, otherwise it will be applied """
 
     target_col_function: Callable = field(default=None, compare=False, repr=False)
     """ A callback function to apply or calculate target variable (y)"""
@@ -88,6 +100,8 @@ class Data:
     feature_importance_list: List[str] = field(default=None, init=False)
     """ A list of features to consider for feature importance study """
 
+    encoders: Dict = field(default_factory=dict, init=False, repr=False)
+    """ Encoder dictionary to encode/decode categorical data"""
 
     def __post_init__(self):
         if not isinstance(self.df, pd.DataFrame):
@@ -100,6 +114,9 @@ class Data:
 
     @property
     def df_X(self) -> pd.DataFrame:
+        """
+        Dataframe Property containing only the top n features from feature importance study
+        """
         _df_X = self.df.drop(self.target_variable, axis=1, errors='ignore')
         if self.feature_importance_list:
             _df_X = _df_X.filter(self.feature_importance_list)
@@ -108,10 +125,9 @@ class Data:
     @property
     def df_y(self) -> pd.DataFrame:
         """
-
+            Target Property as pd.DataFrame
         :return:
         """
-
         return self.df.filter([self.target_variable])
 
     def train_test_split(self, train_size: float = None, random_state: int = 0,
@@ -164,23 +180,24 @@ class Data:
 
     def _transform_data(self):
         # enumerate and columns that are strings
-        if self.cols_to_enum:
-            self.enum_columns()
+        self.enum_columns()
 
-        # calculate target column, if necessary. Otherwise convert target column to the 'float' datatype
-        if self.target_col_function:
-            self.df[self.target_variable] = self.target_col_function(self.df_X)
-            
-        if self.df_y is not None:
-            self.df[self.target_variable] = self.df_y.astype('float')
-
-            self.target_stats = self.df_y[self.target_variable].describe()
+        self._process_target_col()
 
         # Normalize df between 0 and 1
         self.normalize()
 
         if self.feature_importance:
             self.feature_importance_list = self.feature_importance.run(self.df_X, self.df_y.squeeze())
+
+    def _process_target_col(self):
+        # calculate target column, if necessary. Otherwise convert target column to the 'float' datatype
+        if self.target_col_function:
+            self.df[self.target_variable] = self.target_col_function(self.df_X)
+        if self.df_y is not None:
+            self.df[self.target_variable] = self.df_y.astype('float')
+
+            self.target_stats = self.df_y[self.target_variable].describe()
 
     def _verify_target_variable(self):
         if (self.target_col_function is None and
@@ -197,11 +214,11 @@ class Data:
         Accepts a dataframe and list of columns that need to be converted from string to enum.
         The return is a dataframe with the columns converted.
         """
-        self.encoders = {}
-        for col in self.cols_to_enum:
-            self.encoders[col] = OrdinalEncoder().set_output(transform="pandas")
-            self.df[col] = self.encoders[col].fit_transform(self.df[[col]])
-        
+        if self.cols_to_enum:
+            for col in self.cols_to_enum:
+                self.encoders[col] = LabelEncoder()
+                self.df[col] = self.encoders[col].fit_transform(self.df[[col]])
+
     def decode_enum(self, df_):
         """
         Coverts data that was enumerated back to categorical data
@@ -210,9 +227,9 @@ class Data:
         """
         if self.cols_to_enum is not None:
             for col in self.cols_to_enum:
-                if col in df_.columns: # checking if enum column is actually in the final dataframe after feature importance
+                if col in df_.columns:  # checking if enum column is actually in the final dataframe after feature importance
                     df_[col] = pd.DataFrame(self.encoders[col].inverse_transform(df_[[col]]), columns=[col])
-            
+
         return df_
 
     def normalize(self):
@@ -245,10 +262,179 @@ class Data:
         for col in df_:
             df_[col] = df_[col].apply(
                 lambda x: x * (self.stats[col]['max'] - self.stats[col]['min']) + self.stats[col]['min'])
-        
-        df_ = self.decode_enum(df_)    
-        
+
+        df_ = self.decode_enum(df_)
+
         return df_
+
+
+class PreSplitData(Data):
+    def __init__(self, df_train, df_test, df_val,
+                 target_variable: str,
+                 feature_importance: FeatureImportance = None,
+                 cols_to_enum: List[str] = None,
+                 target_col_function: Callable = None
+                 ):
+        self.df_train = df_train
+        self.df_test = df_test
+        self.df_val = df_val
+
+        df = pd.concat([self.df_train, self.df_val, self.df_test], axis=0, ignore_index=True)
+
+        super().__init__(df, target_variable, feature_importance=feature_importance,
+                         cols_to_enum=cols_to_enum, target_col_function=target_col_function)
+
+    @property
+    def df_train_X(self) -> pd.DataFrame:
+        """
+        Dataframe Property containing only the top n features from feature importance study
+        """
+        _df_X = self.df_train.drop(self.target_variable, axis=1, errors='ignore')
+        if self.feature_importance_list:
+            _df_X = _df_X.filter(self.feature_importance_list)
+        return _df_X
+
+    @property
+    def df_train_y(self) -> pd.DataFrame:
+        """
+            Target Property as pd.DataFrame
+        :return:
+        """
+        return self.df_train.filter([self.target_variable])
+
+    @property
+    def df_test_X(self) -> pd.DataFrame:
+        """
+        Dataframe Property containing only the top n features from feature importance study
+        """
+        _df_X = self.df_test.drop(self.target_variable, axis=1, errors='ignore')
+        if self.feature_importance_list:
+            _df_X = _df_X.filter(self.feature_importance_list)
+        return _df_X
+
+    @property
+    def df_test_y(self) -> pd.DataFrame:
+        """
+            Target Property as pd.DataFrame
+        :return:
+        """
+        return self.df_test.filter([self.target_variable])
+
+    @property
+    def df_val_X(self) -> pd.DataFrame:
+        """
+        Dataframe Property containing only the top n features from feature importance study
+        """
+        _df_X = self.df_val.drop(self.target_variable, axis=1, errors='ignore')
+        if self.feature_importance_list:
+            _df_X = _df_X.filter(self.feature_importance_list)
+        return _df_X
+
+    @property
+    def df_val_y(self) -> pd.DataFrame:
+        """
+            Target Property as pd.DataFrame
+        :return:
+        """
+        return self.df_val.filter([self.target_variable])
+
+    def _process_target_col(self):
+        # calculate target column, if necessary. Otherwise convert target column to the 'float' datatype
+        if self.target_col_function:
+            self.df_train[self.target_variable] = self.target_col_function(self.df_train)
+            self.df_test[self.target_variable] = self.target_col_function(self.df_test)
+            self.df_val[self.target_variable] = self.target_col_function(self.df_val)
+
+        if self.df_y is not None:
+            self.df[self.target_variable] = self.df_y.astype('float')
+
+            self.target_stats = self.df_y[self.target_variable].describe()
+
+    def enum_columns(self):
+        """
+        Enumerates any columns that contain string values.
+        Accepts a dataframe and list of columns that need to be converted from string to enum.
+        The return is a dataframe with the columns converted.
+        """
+        if self.cols_to_enum:
+            for col in self.cols_to_enum:
+                self.encoders[col] = LabelEncoder()
+                self.encoders[col].fit(self.df[[col]])
+                category = self.encoders[col].classes_
+
+                self.df_train[col] = self.encoders[col].transform(self.df_train[[col]])
+                self.df_test[col] = self.encoders[col].transform(self.df_test[[col]])
+                self.df_val[col] = self.encoders[col].transform(self.df_val[[col]])
+
+    def decode_enum(self, df_):
+        """
+        Coverts data that was enumerated back to categorical data
+        Accepts a dataframe and list of columns that need to be converted from numerical to str.
+        The return is a dataframe with the columns converted.
+        """
+        if self.cols_to_enum is not None:
+            for col in self.cols_to_enum:
+                if col in df_.columns:  # checking if enum column is actually in the final dataframe after feature importance
+                    df_[col] = pd.DataFrame(self.encoders[col].inverse_transform(df_[[col]]), columns=[col])
+
+        return df_
+
+    def normalize(self):
+        """
+        Normalizes the df between 0 and 1.
+        """
+        self.stats = self.df.describe()
+        if len(self.stats.columns) != len(self.df.columns):
+            raise ValueError("Dataframe includes string data which was not enumerated")
+        for col in self.df:
+            self.df[col] = self.df[col].apply(
+                lambda x: (x - self.stats[col]['min']) / (self.stats[col]['max'] - self.stats[col]['min']))
+
+    # Denormalize for evaluation
+    def denormalize_y(self, y):
+        """
+        Denormalizes the neural network's predictions for model evaluation.
+
+        :param y: The dataset that needs to be denormalized.
+        :type y: pandas Series or NumPy array
+        :return: A denormalized dataset
+        :rtype: pandas Series or NumPy array
+        """
+        return y * (self.target_stats['max'] - self.target_stats['min']) + self.target_stats['min']
+
+    def denormalize(self, df_):
+        """
+        Denormalizes the input for printing predictions.
+        """
+        for col in df_:
+            df_[col] = df_[col].apply(
+                lambda x: x * (self.stats[col]['max'] - self.stats[col]['min']) + self.stats[col]['min'])
+
+        df_ = self.decode_enum(df_)
+
+        return df_
+
+    def train_test_split(self, **kwargs) -> object:
+        """
+        Returns the Pre-Split data (training, validation and test data)
+        Training and Test data are used to build model, and Validation data is reserved as unseen data to evaluate the model
+
+        :return: a tuple of  X_train, X_val, X_test, y_train, y_val, y_test
+        """
+
+        return (self.df_train_X, pd.concat([self.df_val_X, self.df_test_X], axis=0, ignore_index=True),
+                self.df_train_y, pd.concat([self.df_val_y, self.df_test_y], axis=0, ignore_index=True))
+
+    def train_val_test_split(self, **kwargs) -> object:
+        """
+        Returns the Pre-Split data (training, validation and test data)
+        Training and Test data are used to build model, and Validation data is reserved as unseen data to evaluate the model
+
+        :return: a tuple of  X_train, X_val, X_test, y_train, y_val, y_test
+        """
+
+        return self.df_train_X, self.df_val_X, self.df_test_X, self.df_train_y, self.df_val_y, self.df_test_y
+
 
 def read_csv(csv_file: Union[str, Path], target_variable: str,
              feature_importance: FeatureImportance = None,
@@ -341,6 +527,48 @@ def read_sql(table_name: str, db_file: str, target_variable: str,
                 val_size=val_size,
                 test_size=test_size, )
 
+
+def read_pre_split_csv(train_csv_file: str, test_csv_file: str,
+                       val_csv_file: str,
+                       target_variable: str,
+                       feature_importance: FeatureImportance = None,
+                       cols_to_enum: List[str] = None,
+                       target_col_function: Callable = None
+                       ) -> PreSplitData:
+    """
+
+    """
+    df_train = pd.read_csv(train_csv_file)
+    df_test = pd.read_csv(test_csv_file)
+    df_val = pd.read_csv(val_csv_file)
+
+    data = PreSplitData(df_train, df_test, df_val, target_variable, feature_importance, cols_to_enum,
+                        target_col_function)
+
+    return data
+
+
+def read_pre_split_sql(train_sql_table: str,
+                       test_sql_table: str,
+                       val_sql_table: str,
+                       target_variable: str,
+                       db_file: str,
+                       feature_importance: FeatureImportance = None,
+                       cols_to_enum: List[str] = None,
+                       target_col_function: Callable = None,
+                       **kwargs) -> PreSplitData:
+    """
+
+    """
+    with Database.connect(db_file) as connection:
+        df_train = pd.read_sql_query("SELECT * FROM " + train_sql_table, connection, **kwargs)
+        df_test = pd.read_sql_query("SELECT * FROM " + test_sql_table, connection, **kwargs)
+        df_val = pd.read_sql_query("SELECT * FROM " + val_sql_table, connection, **kwargs)
+
+    data = PreSplitData(df_train, df_test, df_val, target_variable, feature_importance, cols_to_enum,
+                        target_col_function)
+
+    return data
 
 class SqlUtil(object):
     @staticmethod

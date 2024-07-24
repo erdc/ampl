@@ -20,7 +20,7 @@ class PipelineModelEval(ModelEval):
     state: State
 
     def __post_init__(self):
-        super().__init__(C.EVALUATE_DT, self.state, C.OPTUNA_DT)
+        super().__init__(C.EVALUATE_DT, self.state, C.DT)
 
     def load_model(self, model_index: int):
         logging.debug('Running DT Eval step')
