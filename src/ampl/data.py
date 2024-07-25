@@ -100,7 +100,7 @@ class Data(IData):
     feature_importance_list: List[str] = field(default=None, init=False)
     """ A list of features to consider for feature importance study """
 
-    encoders: Dict = field(default_factory=dict, init=False, repr=False)
+    encoders: Dict = field(default_factory=dict, init=False, compare=False)
     """ Encoder dictionary to encode/decode categorical data"""
 
     def __post_init__(self):
@@ -279,10 +279,12 @@ class PreSplitData(Data):
         self.df_test = df_test
         self.df_val = df_val
 
-        df = pd.concat([self.df_train, self.df_val, self.df_test], axis=0, ignore_index=True)
-
-        super().__init__(df, target_variable, feature_importance=feature_importance,
+        super().__init__(self.df, target_variable, feature_importance=feature_importance,
                          cols_to_enum=cols_to_enum, target_col_function=target_col_function)
+
+    @property
+    def df(self):
+        return pd.concat([self.df_train, self.df_val, self.df_test], axis=0, ignore_index=True)
 
     @property
     def df_train_X(self) -> pd.DataFrame:
@@ -419,7 +421,7 @@ class PreSplitData(Data):
         Returns the Pre-Split data (training, validation and test data)
         Training and Test data are used to build model, and Validation data is reserved as unseen data to evaluate the model
 
-        :return: a tuple of  X_train, X_val, X_test, y_train, y_val, y_test
+        :return: a tuple of  X_train, X_test, y_train, y_test
         """
 
         return (self.df_train_X, pd.concat([self.df_val_X, self.df_test_X], axis=0, ignore_index=True),
