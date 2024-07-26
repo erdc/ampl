@@ -112,7 +112,7 @@ class Data(IData):
 
         if self.feature_list:
             feature_list_ = set(self.feature_list)
-            if self.target_variable:
+            if self.target_variable and self.target_col_function is None:
                 feature_list_.add(self.target_variable)
             self.df = self.df[list(feature_list_)]
 
@@ -292,7 +292,7 @@ class PreSplitData(Data):
         else:
             feature_list_ = set(df_train.columns.tolist())
 
-        if target_variable:
+        if target_variable and target_col_function is None:
             feature_list_.add(target_variable)
         feature_list_ = list(feature_list_)
 
