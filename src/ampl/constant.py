@@ -43,6 +43,7 @@ class Constant(object):
     RESULTS: Final[str] = 'results'
     TRAIN_FRAC: Final[str] = 'train_frac'
     TEST_FRAC: Final[str] = 'test_frac'
+    ENCODER_MAPPING_JSON: Final[str] = 'encoder_mapping.json'
 
     N_TRIALS: Final[str] = 'n_trials'
     N_PRUNED_TRIALS: Final[str] = 'n_pruned_trials'

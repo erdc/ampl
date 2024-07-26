@@ -60,6 +60,7 @@ class State:
         journal[C.DATA].pop(f"{self.data.target_col_function=}".split("=")[0].split('.')[-1])  # removing from journal
         journal[C.DATA].pop(f"{self.data.feature_importance=}".split("=")[0].split('.')[-1])  # removing from journal
         journal[C.DATA].pop(f"{self.data.encoders=}".split("=")[0].split('.')[-1])  # removing from journal
+        journal[C.DATA].pop(f"{self.data.encoder_mapping=}".split("=")[0].split('.')[-1])  # removing from journal
 
         journal[C.DATA][C.FEATURE_IMPORTANCE] = asdict(self.data.feature_importance)
         journal[C.DATA][C.FEATURE_IMPORTANCE].pop(f"{self.data.feature_importance.results_df=}".split("=")[0].split('.')[-1])

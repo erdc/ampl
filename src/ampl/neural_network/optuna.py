@@ -23,6 +23,8 @@ from ampl.constant import Constant as C
 
 from ampl.optuna import OptunaStep
 
+import json
+
 import logging
 
 logger = logging.getLogger(__name__)
@@ -270,6 +272,10 @@ class PipelineOptuna(OptunaStep):
         """
         # self.load_data()
         Util.check_and_create_directory(self.state.results_directory)
+        # Save the encoder mapping to a .json file
+        json_data = json.dumps(self.data.encoder_mapping, indent=4)
+        with open(self.state.results_directory + C.ENCODER_MAPPING_JSON, "w") as outfile:
+            outfile.write(json_data)
 
         logger.debug(f'training fraction = {self.data.train_size}')
         logger.debug(f'test_size = { (self.data.test_size + self.data.val_size)}')

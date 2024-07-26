@@ -7,6 +7,8 @@ from contextlib import contextmanager
 from pathlib import Path
 from typing import Callable, Union, Optional, Literal, List, Any, Dict
 from sklearn.preprocessing import OrdinalEncoder, LabelEncoder
+import json
+import numpy as np
 
 import pandas as pd
 from sklearn.model_selection import train_test_split
@@ -79,9 +81,6 @@ class Data(IData):
     target_variable: str
     """ target variable (y) column name"""
 
-    feature_list: List[str] = None
-    """List of features to include in study"""
-
     feature_importance: FeatureImportance = field(default_factory=lambda: FeatureImportance(), repr=False)
     """ Feature Importance to run feature importance study using AutoML(XGBoost)  """
 
@@ -106,16 +105,12 @@ class Data(IData):
     encoders: Dict = field(default_factory=dict, init=False, compare=False)
     """ Encoder dictionary to encode/decode categorical data"""
 
+    encoder_mapping: Dict = field(default_factory=dict, init=False, compare=False)
+    """ Dictionary to save mapping for categorical data"""
+
     def __post_init__(self):
         if not isinstance(self.df, pd.DataFrame):
             raise ValueError('Field "df" must be of Pandas Dataframe type and cannot be None')
-
-        if self.feature_list:
-            feature_list_ = set(self.feature_list)
-            if self.target_variable and self.target_col_function is None:
-                feature_list_.add(self.target_variable)
-            self.df = self.df[list(feature_list_)]
-
         self._verify_target_variable()
         self._transform_data()
 
@@ -191,6 +186,10 @@ class Data(IData):
     def _transform_data(self):
         # enumerate and columns that are strings
         self.enum_columns()
+        # # Save the encoder mapping to a .json file
+        # json_data = json.dumps(self.encoder_mapping, indent=4)
+        # with open("encoder_mapping.json", "w") as outfile:
+        #     outfile.write(json_data)
 
         self._process_target_col()
 
@@ -227,7 +226,11 @@ class Data(IData):
         if self.cols_to_enum:
             for col in self.cols_to_enum:
                 self.encoders[col] = LabelEncoder()
-                self.df[col] = self.encoders[col].fit_transform(self.df[[col]])
+                self.encoders[col].fit(self.df[[col]])
+                category = self.encoders[col].classes_
+                # self.encoder_mapping[col] = dict(zip(category, self.encoders[col].transform(category)))
+                self.encoder_mapping[col] = dict(zip(category, list(map(int, self.encoders[col].transform(category)))))
+                self.df[col] = self.encoders[col].transform(self.df[[col]])
 
     def decode_enum(self, df_):
         """
@@ -238,7 +241,7 @@ class Data(IData):
         if self.cols_to_enum is not None:
             for col in self.cols_to_enum:
                 if col in df_.columns:  # checking if enum column is actually in the final dataframe after feature importance
-                    df_[col] = pd.DataFrame(self.encoders[col].inverse_transform(df_[[col]]), columns=[col])
+                    df_[col] = pd.DataFrame(self.encoders[col].inverse_transform(df_[[col]].astype(int)), columns=[col])
 
         return df_
 
@@ -282,25 +285,14 @@ class PreSplitData(Data):
     def __init__(self, df_train, df_test, df_val,
                  target_variable: str,
                  feature_importance: FeatureImportance = None,
-                 feature_list: List[str] = None,
                  cols_to_enum: List[str] = None,
                  target_col_function: Callable = None
                  ):
+        self.df_train = df_train
+        self.df_test = df_test
+        self.df_val = df_val
 
-        if feature_list:
-            feature_list_ = set(feature_list)
-        else:
-            feature_list_ = set(df_train.columns.tolist())
-
-        if target_variable and target_col_function is None:
-            feature_list_.add(target_variable)
-        feature_list_ = list(feature_list_)
-
-        self.df_train = df_train[feature_list_]
-        self.df_test = df_test[feature_list_]
-        self.df_val = df_val[feature_list_]
-
-        super().__init__(self.df, target_variable, feature_importance=feature_importance, feature_list=feature_list,
+        super().__init__(self.df, target_variable, feature_importance=feature_importance,
                          cols_to_enum=cols_to_enum, target_col_function=target_col_function)
 
     @property
@@ -372,10 +364,16 @@ class PreSplitData(Data):
             self.df_test[self.target_variable] = self.target_col_function(self.df_test)
             self.df_val[self.target_variable] = self.target_col_function(self.df_val)
 
-        if self.df_y is not None:
-            self.df[self.target_variable] = self.df_y.astype('float')
+        if self.df_train_y is not None:
+            self.df[self.target_variable] = self.df_train_y.astype('float')
 
-            self.target_stats = self.df_y[self.target_variable].describe()
+            self.target_stats = self.df_train_y[self.target_variable].describe()
+
+        if self.df_test_y is not None:
+            self.df[self.target_variable] = self.df_test_y.astype('float')
+
+        if self.df_val_y is not None:
+            self.df[self.target_variable] = self.df_val_y.astype('float')
 
     def enum_columns(self):
         """
@@ -388,7 +386,8 @@ class PreSplitData(Data):
                 self.encoders[col] = LabelEncoder()
                 self.encoders[col].fit(self.df[[col]])
                 category = self.encoders[col].classes_
-
+                # self.encoder_mapping[col] = dict(zip(category, self.encoders[col].transform(category)))
+                self.encoder_mapping[col] = dict(zip(category, list(map(int, self.encoders[col].transform(category)))))
                 self.df_train[col] = self.encoders[col].transform(self.df_train[[col]])
                 self.df_test[col] = self.encoders[col].transform(self.df_test[[col]])
                 self.df_val[col] = self.encoders[col].transform(self.df_val[[col]])
@@ -402,7 +401,7 @@ class PreSplitData(Data):
         if self.cols_to_enum is not None:
             for col in self.cols_to_enum:
                 if col in df_.columns:  # checking if enum column is actually in the final dataframe after feature importance
-                    df_[col] = pd.DataFrame(self.encoders[col].inverse_transform(df_[[col]]), columns=[col])
+                    df_[col] = pd.DataFrame(self.encoders[col].inverse_transform(df_[[col]].astype(int)), columns=[col])
 
         return df_
 
@@ -410,10 +409,14 @@ class PreSplitData(Data):
         """
         Normalizes the df between 0 and 1.
         """
-        self.stats = self.df.describe()
-        if len(self.stats.columns) != len(self.df.columns):
+        df_ = self.df_train[self.feature_importance.feature_list + [self.target_variable]]
+        # self.stats = self.df_train.describe()
+        self.stats = df_.describe()
+        # if len(self.stats.columns) != len(self.df_train.columns):
+        if len(self.stats.columns) != len(df_.columns):
             raise ValueError("Dataframe includes string data which was not enumerated")
-        for col in self.df_train.columns:
+        # for col in self.df_train.columns:
+        for col in df_.columns:
             self.df_train[col] = self.df_train[col].apply(
                 lambda x: (x - self.stats[col]['min']) / (self.stats[col]['max'] - self.stats[col]['min']))
             self.df_test[col] = self.df_test[col].apply(
@@ -469,7 +472,6 @@ class PreSplitData(Data):
 
 def read_csv(csv_file: Union[str, Path], target_variable: str,
              feature_importance: FeatureImportance = None,
-             feature_list: List[str] = None,
              cols_to_enum: list[str] = None,
              # normalize_data: bool = False,
              target_col_function: Callable = None,
@@ -504,7 +506,6 @@ def read_csv(csv_file: Union[str, Path], target_variable: str,
                 target_variable,
                 feature_importance=feature_importance,
                 cols_to_enum=cols_to_enum,
-                feature_list=feature_list,
                 # normalize_data=normalize_data,
                 target_col_function=target_col_function,
                 train_size=train_size,
@@ -516,7 +517,6 @@ def read_csv(csv_file: Union[str, Path], target_variable: str,
 
 def read_sql(table_name: str, db_file: str, target_variable: str,
              feature_importance: FeatureImportance = None,
-             feature_list: List[str] = None,
              cols_to_enum: list[str] = None,
              # normalize_data: bool = True,
              target_col_function: Callable = None,
@@ -555,7 +555,6 @@ def read_sql(table_name: str, db_file: str, target_variable: str,
                 target_variable,
                 feature_importance=feature_importance,
                 cols_to_enum=cols_to_enum,
-                feature_list=feature_list,
                 # normalize_data=normalize_data,
                 target_col_function=target_col_function,
                 train_size=train_size,
@@ -567,7 +566,6 @@ def read_pre_split_csv(train_csv_file: str, test_csv_file: str,
                        val_csv_file: str,
                        target_variable: str,
                        feature_importance: FeatureImportance = None,
-                       feature_list: List[str] = None,
                        cols_to_enum: List[str] = None,
                        target_col_function: Callable = None
                        ) -> PreSplitData:
@@ -578,8 +576,13 @@ def read_pre_split_csv(train_csv_file: str, test_csv_file: str,
     df_test = pd.read_csv(test_csv_file)
     df_val = pd.read_csv(val_csv_file)
 
-    data = PreSplitData(df_train, df_test, df_val, target_variable, feature_importance=feature_importance,
-                        cols_to_enum=cols_to_enum, feature_list=feature_list, target_col_function=target_col_function)
+    # if feature_importance.feature_list:
+    #     df_train = df_train[feature_importance.feature_list + [target_variable]]
+    #     df_test = df_test[feature_importance.feature_list + [target_variable]]
+    #     df_val = df_val[feature_importance.feature_list + [target_variable]]
+
+    data = PreSplitData(df_train, df_test, df_val, target_variable, feature_importance, cols_to_enum,
+                        target_col_function)
 
     return data
 
@@ -590,7 +593,6 @@ def read_pre_split_sql(train_sql_table: str,
                        target_variable: str,
                        db_file: str,
                        feature_importance: FeatureImportance = None,
-                       feature_list: List[str] = None,
                        cols_to_enum: List[str] = None,
                        target_col_function: Callable = None,
                        **kwargs) -> PreSplitData:
@@ -602,8 +604,8 @@ def read_pre_split_sql(train_sql_table: str,
         df_test = pd.read_sql_query("SELECT * FROM " + test_sql_table, connection, **kwargs)
         df_val = pd.read_sql_query("SELECT * FROM " + val_sql_table, connection, **kwargs)
 
-    data = PreSplitData(df_train, df_test, df_val, target_variable, feature_importance=feature_importance,
-                        cols_to_enum=cols_to_enum, feature_list=feature_list, target_col_function=target_col_function)
+    data = PreSplitData(df_train, df_test, df_val, target_variable, feature_importance, cols_to_enum,
+                        target_col_function)
 
     return data
 
