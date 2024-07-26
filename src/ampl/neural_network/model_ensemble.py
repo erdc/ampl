@@ -212,8 +212,7 @@ class PipelineModelEnsemble(PipelineStep):
         plt.grid(alpha=0.15)
         plt.legend()
         fig.savefig(
-            self.state.plots_directory + 'ensemble_' + self._ensemble_mode + '_actual-vs-predicted_' +
-            self.state.model_name + '.png')
+            f'{self.state.plots_directory}{self.key}_ensemble_{self._ensemble_mode}_actual-vs-predicted_{self.state.model_name}.png')
         plt.close()
 
         # Percent Error - Log Scale
@@ -231,8 +230,7 @@ class PipelineModelEnsemble(PipelineStep):
         plt.yticks(fontsize=15)
         plt.grid(alpha=0.15)
         fig.savefig(
-            self.state.plots_directory + 'ensemble_' + self._ensemble_mode + '_percent-error_' +
-            self.state.model_name + '.png')
+            f'{self.state.plots_directory}{self.key}_ensemble_{self._ensemble_mode}_percent-error_{self.state.model_name}.png')
         plt.close()
 
         # Absolute Error
@@ -244,8 +242,7 @@ class PipelineModelEnsemble(PipelineStep):
         plt.yticks(fontsize=15)
         plt.grid(alpha=0.15)
         fig.savefig(
-            self.state.plots_directory + 'ensemble_' + self._ensemble_mode + '_absolute-error_' +
-            self.state.model_name + '.png')
+            f'{self.state.plots_directory}{self.key}_ensemble_{self._ensemble_mode}_absolute-error_{self.state.model_name}.png')
         plt.close()
 
         self.journal[C.RUN_TIME] = Util.display_time(t6 - t0)

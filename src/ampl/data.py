@@ -286,6 +286,10 @@ class PreSplitData(Data):
     def df(self):
         return pd.concat([self.df_train, self.df_val, self.df_test], axis=0, ignore_index=True)
 
+    @df.setter
+    def df(self, value):
+        pass
+
     @property
     def df_train_X(self) -> pd.DataFrame:
         """
@@ -388,8 +392,12 @@ class PreSplitData(Data):
         self.stats = self.df.describe()
         if len(self.stats.columns) != len(self.df.columns):
             raise ValueError("Dataframe includes string data which was not enumerated")
-        for col in self.df:
-            self.df[col] = self.df[col].apply(
+        for col in self.df_train.columns:
+            self.df_train[col] = self.df_train[col].apply(
+                lambda x: (x - self.stats[col]['min']) / (self.stats[col]['max'] - self.stats[col]['min']))
+            self.df_test[col] = self.df_test[col].apply(
+                lambda x: (x - self.stats[col]['min']) / (self.stats[col]['max'] - self.stats[col]['min']))
+            self.df_val[col] = self.df_val[col].apply(
                 lambda x: (x - self.stats[col]['min']) / (self.stats[col]['max'] - self.stats[col]['min']))
 
     # Denormalize for evaluation

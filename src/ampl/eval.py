@@ -188,7 +188,7 @@ class ModelEval(PipelineStep):
         plt.yticks(fontsize=15)
         plt.grid(alpha=0.15)
         fig.savefig(
-            self.state.plots_directory + 'percent-error_' + self.state.model_name + '_top_' + str(j) + '.png')
+            f'{self.state.plots_directory}{self.key}_percent-error_{self.state.model_name}_top_{j}.png')
         plt.close()
 
     def absolute_error_plot(self, abs_error, j, y_val):
@@ -204,5 +204,5 @@ class ModelEval(PipelineStep):
         plt.yticks(fontsize=15)
         plt.grid(alpha=0.15)
         fig.savefig(
-            self.state.plots_directory + 'absolute-error_' + self.state.model_name + '_top_' + str(j) + '.png')
+            f'{self.state.plots_directory}{self.key}_absolute-error_{self.state.model_name}_top_{j}.png')
         plt.close()
