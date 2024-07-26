@@ -126,11 +126,14 @@ class Configuration(dict):
             val_size = self['data'].get('val_frac', remaining_size)
             test_size = self['data'].get('test_frac', remaining_size)
 
+            feature_list = self['feature_importance']['feature_list']
+
             if csv_file:
                 self.data = read_csv(csv_file,
                                      target_variable,
                                      cols_to_enum=cols_to_enum,
                                      feature_importance=feature_importance,
+                                     feature_list=feature_list,
                                      # normalize_data=normalize_data,
                                      target_col_function=self.target_col_function,
                                      train_size=train_size,
@@ -150,6 +153,7 @@ class Configuration(dict):
                                                    target_variable,
                                                    cols_to_enum=cols_to_enum,
                                                    feature_importance=feature_importance,
+                                                   feature_list=feature_list,
                                                    target_col_function=self.target_col_function,
                                                    )
 
@@ -163,6 +167,7 @@ class Configuration(dict):
                                                    db_file=db,
                                                    cols_to_enum=cols_to_enum,
                                                    feature_importance=feature_importance,
+                                                   feature_list=feature_list,
                                                    target_col_function=self.target_col_function,
                                                    )
             elif table_name:
@@ -170,6 +175,7 @@ class Configuration(dict):
                                      target_variable,
                                      cols_to_enum=cols_to_enum,
                                      feature_importance=feature_importance,
+                                     feature_list=feature_list,
                                      # normalize_data=normalize_data,
                                      target_col_function=self.target_col_function,
                                      train_size=train_size,
