@@ -53,6 +53,7 @@ class State:
         journal[C.RESULTS_DIR] = self.results_directory
         journal[C.SAVED_MODELS_DIR] = self.saved_models_directory
         journal[C.PLOTS_DIR] = self.plots_directory
+        journal[C.METADATA_FILE] = self.results_directory + C.METADATA_JSON
         journal[C.DATA] = asdict(self.data)
 
         # removing dataframe from journal
@@ -61,11 +62,22 @@ class State:
         journal[C.DATA].pop(f"{self.data.feature_importance=}".split("=")[0].split('.')[-1])  # removing from journal
         journal[C.DATA].pop(f"{self.data.encoders=}".split("=")[0].split('.')[-1])  # removing from journal
         journal[C.DATA].pop(f"{self.data.encoder_mapping=}".split("=")[0].split('.')[-1])  # removing from journal
+        journal[C.DATA].pop(f"{self.data.column_stats=}".split("=")[0].split('.')[-1])  # removing from journal
 
         journal[C.DATA][C.FEATURE_IMPORTANCE] = asdict(self.data.feature_importance)
         journal[C.DATA][C.FEATURE_IMPORTANCE].pop(f"{self.data.feature_importance.results_df=}".split("=")[0].split('.')[-1])
         journal[C.DATA][C.FEATURE_IMPORTANCE][C.RESULTS] = self.data.feature_importance.results_df.to_dict()
         journal[C.DATA][C.FEATURE_IMPORTANCE].pop(f"{self.data.feature_importance.shap_values=}".split("=")[0].split('.')[-1])
+
+        metadata = {}
+        metadata['journal_file'] = self.journal_file
+        metadata['column_stats'] = self.data.column_stats
+        if self.data.cols_to_enum:
+            metadata['encoder_mapping'] = self.data.encoder_mapping
+        else:
+            metadata['encoder_mapping'] = {}
+        Util.write_dict_to_json(metadata, self.results_directory + 'metadata_' + self.model_name + '.json')
+
         Util.update_journal(C.MODEL, journal, self.journal_file)
 
     def get_model_base_path(self, model_number: int) -> str:

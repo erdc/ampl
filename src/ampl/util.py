@@ -219,7 +219,11 @@ class Util(object):
             file_path = os.path.join(folderPath, file_name)
             print(file_path)
 
-
-
-
-
+    @staticmethod
+    def write_dict_to_json(dict_, json_file):
+        """
+        Saves a dictionary to a .json file
+        """
+        json_data = json.dumps(dict_, indent=4)
+        with open(json_file, "w") as outfile:
+            outfile.write(json_data)
