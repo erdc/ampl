@@ -71,6 +71,7 @@ class State:
 
         metadata = {}
         metadata['journal_file'] = self.journal_file
+        metadata['order_of_model_features'] = self.data.feature_importance_list
         metadata['column_stats'] = self.data.column_stats
         if self.data.cols_to_enum:
             metadata['encoder_mapping'] = self.data.encoder_mapping
