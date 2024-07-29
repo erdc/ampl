@@ -57,6 +57,10 @@ class CNNMetrics(Enum):
 
 class LossFunc(Enum):
     MAE = 'mae'
+    MAPE = 'mape'
+    MSE = 'mse'
+    MSLE = 'msle'
+    LOGCOSH = 'log_cosh'
 
 
 class Direction(Enum):

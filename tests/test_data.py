@@ -6,6 +6,7 @@ from ampl.data import *
 from pandas.testing import assert_frame_equal
 from numpy.testing import assert_array_equal
 
+
 class TestDatabase(unittest.TestCase):
     sql_data_file = './data/dataset_temp.sqlite'
     db = Database(sql_data_file)
@@ -48,11 +49,11 @@ class TestData(unittest.TestCase):
 
         with self.assertRaises(ValueError) as cm:
             data2 = read_csv(csv_file, 'y', target_col_function=self.target_func,
-                                  feature_importance=self.config.create_feature_importance())
+                             feature_importance=self.config.create_feature_importance())
 
         data3 = read_csv(csv_file, 'y', target_col_function=self.target_func,
-                              cols_to_enum=self.config['data']['cols_to_enum'],
-                              feature_importance=self.config.create_feature_importance())
+                         cols_to_enum=self.config['data']['cols_to_enum'],
+                         feature_importance=self.config.create_feature_importance())
 
         this_path = Path(__file__).parent
         db_file = str(this_path / 'data/temp.sqlite')
@@ -83,7 +84,7 @@ class TestData2(unittest.TestCase):
 
     def test_load_data1(self):
         data1 = read_sql(self.config['data']['data_table_name'], self.config['db']['data_file'],
-                              self.config['model']['target_variable'])
+                         self.config['model']['target_variable'])
         if self.config['data']['data_normalized_table_name'] is not None:
             # write the preprocessed DataFrame to a SQLite database
             SqlUtil.to_sql(data1.df, self.config.create_data_db(),
@@ -133,3 +134,13 @@ class TestData3(unittest.TestCase):
         self.assertAlmostEqual(len(X_train), int(n_size * (1 - (val_size + test_size))), delta=1)
         self.assertAlmostEqual(len(X_val), int(n_size * val_size), delta=1)
         self.assertAlmostEqual(len(X_test), int(n_size * test_size), delta=1)
+
+
+class TestPreSplitData(unittest.TestCase):
+    def test_df(self):
+        this_path = Path(__file__).parent
+        config_file = str(this_path / 'Brianna/ampl_config.yml')
+        config = Configuration(config_file)
+
+        data = config.create_data()
+        self.assertTrue(True)

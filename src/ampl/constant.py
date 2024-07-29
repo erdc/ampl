@@ -2,6 +2,11 @@ from typing import Final, Tuple
 
 
 class Constant(object):
+    NN : Final[str] = 'NN'
+    DT : Final[str] = 'DT'
+    CNN : Final[str] = 'CNN'
+
+
     TARGET_VARIABLE: Final[str] = 'target_variable'
     # Dense fully connected neural network
     BUILD_NN: Final[str] = 'build_nn'
@@ -15,9 +20,8 @@ class Constant(object):
     EVALUATE_DT: Final[str] = 'eval_dt'
     ENSEMBLE_DT: Final[str] = 'ensemble_dt'
 
-    # Convolutional neural networks
     BUILD_CNN: Final[str] = 'build_cnn'
-    OPTUNA_CNN: Final[str] = 'optuna_cnn '
+    OPTUNA_CNN: Final[str] = 'optuna_cnn'
     EVALUATE_CNN: Final[str] = 'eval_cnn'
     ENSEMBLE_CNN: Final[str] = 'ensemble_cnn'
 
@@ -41,6 +45,8 @@ class Constant(object):
     RESULTS: Final[str] = 'results'
     TRAIN_FRAC: Final[str] = 'train_frac'
     TEST_FRAC: Final[str] = 'test_frac'
+    METADATA_FILE: Final[str] = 'metadata_file'
+    METADATA_JSON: Final[str] = 'metadata.json'
 
     N_TRIALS: Final[str] = 'n_trials'
     N_PRUNED_TRIALS: Final[str] = 'n_pruned_trials'

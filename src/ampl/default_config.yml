@@ -36,19 +36,27 @@ db: # File refers to SQLite3 database file and specifically its path
   data_file: './data/your_data.sqlite' # REQUIRED USER MODIFICATION , If using csv_file set this to null
 
 data:
-  # Only one input source is used, either read/write from Sqlite3 database file or CSV file
-  # If you do not wish to save the normalized processed data then set data_normalized_table_name and csv_normalized_file to null
+  # Only one input source is used, either read/write from Sqlite3 database file or CSV file or pre-split data
   # If both input sources are present CSV will take precedence
 
   data_table_name: 'your_data_table_name' # REQUIRED USER MODIFICATION. # set to the table name in your database.
   csv_file: null # Input data file in CSV file format with all the features (X) and target variable (y)
+  pre_split: null
+#    csv: null
+#      train: 'path_to_training.csv'
+#      test: 'path_to_test.csv'
+#      val: 'path_to_test.csv'
+#    sql: null
+#      train: 'train_table_name'
+#      test: 'test_table_name'
+#      val: 'val_table_name'
 
   cols_to_enum:  null # REQUIRED USER MODIFICATION # String Columns to convert to Category type
 #      - "enum_col_1"
 #      - "enum_col_2"
 #      - "enum_col_2"
 
-  # All these percentages must add up to 1
+  # All these percentages must add up to 1. This section will be ignored if using pre-split data.
   train_frac: 0.8 # percentage of data used for training.
   val_frac: 0.1 # percentage of data used for validation.
   test_frac: 0.1 # percentage of data used for testing.

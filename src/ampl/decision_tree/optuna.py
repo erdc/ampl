@@ -45,7 +45,7 @@ class PipelineOptuna(OptunaStep):
     n_jobs: int = -1
 
     def __post_init__(self):
-        super().__init__(C.OPTUNA_DT, self.state, C.OPTUNA_DT)
+        super().__init__(C.OPTUNA_DT, self.state, C.DT)
         if self.sampler is None:
             optuna = Util.load_optuna()
             self.sampler = optuna.samplers.TPESampler(seed=0, multivariate=self.multivariate)
@@ -173,7 +173,7 @@ class PipelineOptuna(OptunaStep):
         logger.debug(f'training fraction = {self.data.train_size}')
         logger.debug(f'test_size = {(self.data.test_size + self.data.val_size)}')
 
-        X_train, X_test, y_train, y_test = self.data.train_test_split(random_state=random_state)
+        X_train, _, X_test, y_train, _, y_test = self.data.train_val_test_split()
 
         self.journal[C.TRAINING_POINTS] = X_train.shape[0]
         self.journal[C.TESTING_POINTS] = X_test.shape[0]

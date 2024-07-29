@@ -27,7 +27,7 @@ class PipelineModelEval(ModelEval):
     state: State
 
     def __post_init__(self):
-        super().__init__(C.EVALUATE_NN, self.state, C.OPTUNA_NN)
+        super().__init__(C.EVALUATE_NN, self.state, C.NN)
 
     def load_model(self, model_index: int, model_ext: str = C.MODEL_EXT_NN):
         load_model_file = self.state.get_model_path(model_index, model_ext=model_ext)
@@ -65,5 +65,5 @@ class PipelineModelEval(ModelEval):
         ax2.set(xlabel='Epoch', ylabel='Loss - MAE')
         ax2.legend()
         fig.savefig(
-            self.state.plots_directory + 'loss_' + self.state.model_name + '_top_' + str(j) + '.png')
+            f'{self.state.plots_directory}{self.key}_loss_{self.state.model_name}_top_{j}.png')
         plt.close()
