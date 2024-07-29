@@ -1,5 +1,10 @@
 from enum import Enum
 
+## CNN inports for quick reference to vision functions. May remove later
+import fastai.vision.all 
+import torch
+from torch import nn, optim
+
 
 def process_enums_list(enum_list):
     if not all(isinstance(s, str) for s in enum_list):
@@ -26,6 +31,29 @@ class NNOptimizers(Enum):
     ADAGRAD = 'Adagrad'
     ADAMAX = 'Adamax'
 
+class CNNOptimizers(Enum):   
+    RANGER = fastai.vision.all.ranger
+    SGD = fastai.vision.all.SGD
+    RMSPROP = fastai.vision.all.RMSProp
+    ADAM = fastai.vision.all.Adam
+    
+class CNNBackbone(Enum):
+    RESNET18 = fastai.vision.all.resnet18
+    RESNET34 = fastai.vision.all.resnet34 
+    RESNET50 = fastai.vision.all.resnet50 
+    RESNET101 = fastai.vision.all.resnet101 
+    RESNET152 = fastai.vision.all.resnet152
+
+class CNNActivation(Enum):
+    RELU = torch.nn.modules.activation.ReLU
+    MISH = torch.nn.modules.activation.Mish
+    TANH = torch.nn.modules.activation.Tanh
+
+class CNNMetrics(Enum):
+    DICE = fastai.metrics.Dice
+    DICEMULTII = fastai.metrics.DiceMulti
+    JACCARDCOEFF = fastai.metrics.JaccardCoeff
+    
 
 class LossFunc(Enum):
     MAE = 'mae'

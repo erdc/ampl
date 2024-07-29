@@ -23,7 +23,7 @@ class PipelineStep(object):
     def __init__(self,
                  name: str,
                  state: State,
-                 key: Literal[C.OPTUNA_NN, C.OPTUNA_DT]) -> None:
+                 key: Literal[C.OPTUNA_NN, C.OPTUNA_DT, C.OPTUNA_CNN]) -> None:
         """
             Create the ensemble of good models to perform predictions with. This code requires models to be in
             the database to perform different ensemble methods.

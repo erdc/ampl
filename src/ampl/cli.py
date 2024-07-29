@@ -24,6 +24,8 @@ class PipelineCli(object):
                                  help='Creates a new default YAML Configuration file')
         self.parser.add_argument('-dt', '--decision_tree', action='store_true',
                                  help='Use Decision Tree instead of Neural Networks')
+        self.parser.add_argument('-cnn', '--convolutional_nn', action='store_true',
+                                 help='Use convolutional neural networks for image recognition')
         self.parser.add_argument('-o', '--optuna', action='store_true',
                                        default=False, help='Run Optuna Model step')
         self.parser.add_argument('-b', '--build', action='store_true',
@@ -48,6 +50,8 @@ class PipelineCli(object):
 
             if args.decision_tree:
                 self.pipeline = self.config.create_pipeline_dt()
+            elif args.convolutional_nn:
+                self.pipeline = self.config.create_pipeline_cnn()                
             else:
                 self.pipeline = self.config.create_pipeline_nn()
 

@@ -46,7 +46,6 @@ class PipelineModelBuild(PipelineStep):
         tf = UtilNN.load_tensorflow()
         self.loss = self.loss.value
         if self.early_stopping is None:
-
             self.early_stopping = tf.keras.callbacks.EarlyStopping(monitor='val_loss', patience=self.patience, verbose=self.verbose,
                                                 mode='min', min_delta=0.00001)
         if self.reduce_lr is None:

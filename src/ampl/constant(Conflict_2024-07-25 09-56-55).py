@@ -66,11 +66,8 @@ class Constant(object):
     PERCENT_ERRORS: Final[str] = 'percent_errors'
     DT_PARAMS: Final[str] = 'params'
 
-    # Extension formats for neural networks, decision trees, and convolutional neural networks
-    MODEL_EXT_NN: Final[str] = '.keras'
     MODEL_EXT_DT: Final[str] = '.json'
-    MODEL_EXT_CNN: Final[str] = '.pt'
-    
+    MODEL_EXT_NN: Final[str] = '.keras'
     CSV_EXT: Final[str] = '.csv'
     HISTORY_EXT: Final[str] = '_history.pickle'
 

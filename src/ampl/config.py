@@ -1,8 +1,10 @@
+import os
 from typing import Callable
 
 import yaml
 from jinja2 import Template, Undefined
 
+import ampl.convolutional_neural_network
 from ampl.util import Util
 from ampl.enums import *
 from ampl.state import State
@@ -10,6 +12,7 @@ from ampl.data import Data, Database, read_csv, read_sql
 from ampl.feature_importance import FeatureImportance
 import ampl.neural_network.pipeline
 import ampl.decision_tree.pipeline
+import ampl.convolutional_neural_network.pipeline
 from ampl.decision_tree.optuna_options import OptunaOptions, Range
 
 import logging
@@ -37,9 +40,14 @@ class Configuration(dict):
                                         Configuration.sampler_constructor)
         yaml.SafeLoader.add_constructor("!python/object:tensorflow.keras.initializers.RandomUniform",
                                         Configuration.random_uniform_constructor)
-
         yaml.SafeLoader.add_constructor("!python/object:tensorflow.keras.initializers.GlorotUniform",
                                         Configuration.glorot_uniform_constructor)
+
+        files = os.listdir("./")
+        files2 = os.listdir("../")
+        files3 = os.listdir("../../all_run_dir/bda_run_dir")
+
+        
 
         with open(self.config_file, 'r') as f:
             config_text = f.read()
@@ -95,7 +103,6 @@ class Configuration(dict):
         return self.data_db
 
     def create_feature_importance(self) -> FeatureImportance:
-
         number_of_features = self['feature_importance']['number_of_features']
         feature_list = self['feature_importance']['feature_list']
 
@@ -121,6 +128,8 @@ class Configuration(dict):
             val_size = self['data'].get('val_frac', remaining_size)
             test_size = self['data'].get('test_frac', remaining_size)
 
+            
+            
             if csv_file:
                 self.data = read_csv(csv_file,
                                      target_variable,
@@ -171,19 +180,13 @@ class Configuration(dict):
         )
         return state
 
+
+    ## Start NN ##
     def create_state_nn(self) -> State:
         if self.state is None:
             self.state = self._create_state()
         self.state.top_trials_table_name = self['optuna_nn']['top_trials_table_name']
         self.state.best_trial_table_name = self['optuna_nn']['best_trial_table_name']
-
-        return self.state
-
-    def create_state_dt(self) -> State:
-        if self.state is None:
-            self.state = self._create_state()
-        self.state.top_trials_table_name = self['optuna_dt']['top_trials_table_name']
-        self.state.best_trial_table_name = self['optuna_dt']['best_trial_table_name']
 
         return self.state
 
@@ -273,6 +276,18 @@ class Configuration(dict):
 
         return _pipeline
 
+    ## End neural network ##
+
+    ## Start Decision Tree ##
+    
+    def create_state_dt(self) -> State:
+        if self.state is None:
+            self.state = self._create_state()
+        self.state.top_trials_table_name = self['optuna_dt']['top_trials_table_name']
+        self.state.best_trial_table_name = self['optuna_dt']['best_trial_table_name']
+
+        return self.state
+    
     def create_pipeline_dt(self) -> ampl.decision_tree.Pipeline:
         state = self.create_state_dt()
         optuna_dt = self.create_optuna_dt()
@@ -286,7 +301,6 @@ class Configuration(dict):
                                                 eval=eval_dt,
                                                 ensemble=ensemble_dt,
                                                 )
-
         return _pipeline
 
     def create_optuna_dt(self):
@@ -364,3 +378,106 @@ class Configuration(dict):
                                                           EnsembleMode(ensemble_mode),
                                                           num_models)
         return ens_nn
+
+## End Decision Tree ##
+## Start convolutional neural network ##
+    def create_state_cnn(self) -> State:
+        if self.state is None:
+            self.state = self._create_state()
+        self.state.top_trials_table_name = self['optuna_cnn']['top_trials_table_name']
+        self.state.best_trial_table_name = self['optuna_cnn']['best_trial_table_name']
+
+        return self.state
+
+    def create_pipeline_cnn(self) -> ampl.convolutional_neural_network.Pipeline:
+            state = self.create_state_cnn()
+            optuna_cnn = self.create_optuna_cnn()
+            build_cnn = self.create_build_cnn()
+            eval_cnn = self.create_eval_cnn()
+            ensemble_cnn = self.create_ensemble_cnn()
+
+            _pipeline = ampl.convolutional_neural_network.Pipeline(state,
+                                                    optuna=optuna_cnn,
+                                                    build=build_cnn,
+                                                    eval=eval_cnn,
+                                                    ensemble=ensemble_cnn,
+                                                    )
+
+            return _pipeline
+        
+def create_optuna_cnn(self):
+    state = self.create_state_cnn()
+
+    loss = self['cnn']['loss']
+    eval_metric = self['cnn']['eval_metric']
+
+    n_trials = self['optuna']['n_trials']
+    n_jobs = Util.get_n_jobs(percent=self['optuna']['parallel_percent'])
+    direction = self['optuna']['direction']
+    pruner = self['optuna']['pruner']
+
+    early_stopping_rounds = self['optuna_cnn']['early_stopping_rounds']
+    observation_key = self['optuna_cnn']['observation_key']
+    sampler = self['optuna_cnn']['sampler']
+    multivariate = self['optuna_cnn']['multivariate']
+
+    r_vals = self['optuna_cnn']['ranges']
+    ranges = OptunaOptions()
+    ranges.n_estimators = Range(*r_vals['n_estimators'])
+    ranges.max_depth = Range(*r_vals['max_depth'])
+    ranges.learning_rate = Range(*r_vals['learning_rate'])
+    ranges.col_sample_by_tree = Range(*r_vals['col_sample_by_tree'])
+    ranges.subsample = Range(*r_vals['subsample'])
+    ranges.alpha = Range(*r_vals['alpha'])
+    ranges.lambda_ = Range(*r_vals['lambda'])
+    ranges.gamma = Range(*r_vals['gamma'])
+    ranges.min_child_weight = Range(*r_vals['min_child_weight'])
+
+    opt_nn = ampl.decision_tree.PipelineOptuna(state,
+                                                n_trials=n_trials,
+                                                loss=loss,
+                                                eval_metric=eval_metric,
+                                                early_stopping_rounds=early_stopping_rounds,
+                                                observation_key=observation_key,
+                                                direction=Direction(direction),
+                                                pruner=pruner,
+                                                sampler=sampler,
+                                                multivariate=multivariate,
+                                                n_jobs=n_jobs
+                                                )
+    return opt_nn
+
+def create_build_cnn(self):
+    state = self.create_state_cnn()
+
+    loss = self['cnn']['loss']
+    eval_metric = self['cnn']['eval_metric']
+    early_stopping_rounds = self['cnn']['early_stopping_rounds']
+    verbosity = self['cnn']['verbosity']
+
+    build_nn = ampl.decision_tree.PipelineModelBuild(state,
+                                                        loss=loss,
+                                                        eval_metric=eval_metric,
+                                                        early_stopping_rounds=early_stopping_rounds,
+                                                        verbosity=verbosity)
+
+    return build_nn
+
+def create_eval_cnn(self):
+    state = self.create_state_cnn()
+
+    eval_nn = ampl.decision_tree.PipelineModelEval(state)
+
+    return eval_nn
+
+def create_ensemble_cnn(self):
+    state = self.create_state_cnn()
+
+    ensemble_mode = self['ensemble_cnn']['ensemble_mode']
+    num_models = self['model']['num_models']
+
+    ens_nn = ampl.decision_tree.PipelineModelEnsemble(state,
+                                                        EnsembleMode(ensemble_mode),
+                                                        num_models)
+    return ens_nn        
+## End convolutional neural network ##

@@ -1,0 +1,610 @@
+# TODO: the things in here are probably related to pytorch and will need to be moved over one things at a time
+## J
+
+def objective(trial):
+  with open('parameters.yml', 'r') as f:
+     param_file = yaml.safe_load(f)
+  #parameters
+  print(param_file)
+  # params = param_file
+  params = {
+  'bs' : param_file.get('bs'),  #batch size
+  'norm_tfms' : trial.suggest_categorical("norm_tfms", boolean_options),  #transformations include normalization?
+  'apply_tfms' : trial.suggest_int("apply_tfms", apply_tfms_min, apply_tfms_max, log=False, step=1),  #3 transformation settings: none, default, more aggressive
+  'backbone' : trial.suggest_categorical("backbone", backbone_options), #backbone (generally been looking at resnet18, 50, 101)  
+  'metrics' : trial.suggest_categorical("metric", metric_options), # metrics
+  'act_cls' : trial.suggest_categorical("activation function", activation_function_options), #activation function
+  'opt_func' : trial.suggest_categorical("optimization function", optimization_function_options),  #optimization function
+  'loss_func' : trial.suggest_categorical("loss function", loss_func_options),  #loss function (cross-entropy or focal loss) 
+  'lr' : trial.suggest_float("lr", lr_min, lr_max, log=True), #learning rate (usualy choosen based on fastain's learn.lr_find)
+  'epochs1' : param_file.get('epochs1'),  #number of training epochs for training last layer
+  'epochs2' : param_file.get('epochs2'),  #number of training epochs for training full network
+  'optuna_epochs' : param_file.get('optuna_epochs'), # the number of epochs per optuna trial
+  'weights' : trial.suggest_int("weights", weights_min, weights_max, step=1),  #4 weight settings: no weights, [1,1,1], [1, 1, 10], [1, 15, 35]
+  'pathData' : str(param_file.get('pathData')), #path to parent folder with images and targets subfolders (and subsubfolders with individual datasets)
+  'pathModel' : str(param_file.get('pathModel')),  #folder were models are saved
+  'pathOut' : str(param_file.get('pathOut')), #folder for output
+  'imgFolder' : str(param_file.get('imgFolder')),  #subfolder name for images
+  'labelFolder' : str(param_file.get('labelFolder')),  #subfolder name for labels
+  'foldersOpt' : param_file.get('foldersOpt'),  #3 folder settings: train on current folder/dataset, train on all but current folder/dataset in 'allFolders', or train on datasets in 'allFolders'
+  'training' : param_file.get('training'),
+  'output_name': param_file.get('output_name'),
+  'filepre' : param_file.get('filepre'),
+  'valid_files' : param_file.get('valid_files')
+    }
+  print(params)
+  print(params['bs'])
+  foldersSet = [str(param_file.get('foldersSet'))] #dataset used in training
+  allFolders = foldersSet #+['Sievierodonetsk'] #dataset used in testing
+  print('this is allFolders', allFolders)
+  # TODO use batches instead of kfold
+  # do data split of 80-10-10 or 70-15-15
+  #either ensemble the two methods or run them independently and compare
+
+  # used for averaging the scores returned from all of the different training models created by k-fold to determine if the model is good for different 
+  # training and validation data
+  score_list = []
+  dmg_1_list = []
+  loc_1_list = []
+
+  for valFile in params['valid_files']:
+
+    for AOI in foldersSet:
+      #name of folder/model file contains the parameter settings
+      fn = AOI+'_kfold='+str(valFile)+'_'+str(params['foldersOpt'])+('_Norm_' if params['norm_tfms'] else '')+'_appT2='+str(params['apply_tfms'])+'_bs='+str(params['bs'])+'_'+str(params['backbone']).split(' ')[1]+'_'+str(params['metrics']).split(' ')[1].split('.')[2][:-2]+'_'+str(params['act_cls']).split(' ')[1].split('.')[4][:-2]+'_'+str(params['opt_func']).split(' ')[1]+'_'+str(params['lr'])+'_'+params['loss_func']+'_'+str(params['optuna_epochs'])+'_'+'w='+str(params['weights'])+'_test_GradAccum=8'
+      print(fn)
+
+      #train model
+      if "training" in params:
+        training = params["training"]
+      else:
+        training = True
+      train_model(params, AOI, allFolders, valFile, fn, training)
+
+      #get output
+      # set output_name in the yaml
+      output_name = params["output_name"]
+      files, folds = getoutputs(params, AOI, valFile, fn, allFolders, output_name)
+
+      #get output for allFolders datasets
+      filepre = params['filepre']
+      
+      score, dmg_1, loc_1 = getscore(params, files, folds, fn, AOI, filepre, output_name)
+    
+      #get output for training datasets
+      indices = np.where(np.array(folds) == AOI)[0]
+      files_AOI = [files[x] for x in indices]
+      folds_AOI = [folds[x] for x in indices]
+
+      score_list.append(score)
+      dmg_1_list.append(dmg_1)
+      loc_1_list.append(loc_1)
+    
+  return mean(score_list), mean(dmg_1_list), mean(loc_1_list)
+
+
+def create_and_train(self, monitor, norm_tfms, apply_tfms, backbone, metrics, act_cls, opt_func, loss_func, lr, weights, AOI, valFile):
+    
+      #weight settings: no weights, [1,1,1], [1, 1, 10], [1, 11, 35]
+      if weights == 0: #no weights
+        w = None
+      elif weights == 1: #equal weights
+        w = torch.tensor([1, 1, 1], device = "cuda").float()
+      elif weights == 2: #weigh damage more
+        w = torch.tensor([1, 1, 10], device = "cuda").float()
+      else: #approximately inverse to pixel count over Sievierodonetsk
+        w = torch.tensor([1, 15., 30.], device = "cuda").float()
+      print(w)
+
+      #loss function (cross-entropy or focal loss)
+      if params['loss_func'] == 'CE':
+        ls = CrossEntropyLossFlat(weight = w, axis=1)
+      else:
+        ls = FocalLossFlat(weight = w, axis = 1)
+
+      #3 folder settings: train on current folder/dataset, train on all but current folder/dataset in 'allFolders', or train on datasets in 'allFolders'
+      if params['foldersOpt'] == 0:
+        folders = [AOI]
+      elif params['foldersOpt'] == 1:
+        folders = self.allFolders.copy()
+        folders.remove(AOI)
+      elif params['foldersOpt'] == 2:
+        folders = self.allFolders
+      else:
+        print('no valid folders')
+
+      #3 transformation settings: none, default, more aggressive
+      #two more optuna-able parameters here- apply_tfms and norm_tfms
+      if apply_tfms > 0:
+        if apply_tfms == 1:
+          tfs = [*aug_transforms(), Normalize2() if norm_tfms else None]
+        else:
+          tfs = [*aug_transforms(flip_vert= True, max_rotate = 30, max_zoom = 1.2, min_zoom = 0.8, max_lighting = .5), 
+          Contrast(max_lighting = 0.5, p = 0.5), Saturation(max_lighting = 0.5, p = 0.5), 
+          Hue(max_hue = 0.5, p = 0.5), Normalize2() if norm_tfms else None]
+      else:
+        if norm_tfms:
+          tfs = Normalize2()
+        else:
+          tfs = None
+
+      def get_y(o): return get_image_files(o, recurse = True, folders = folders)
+      
+      #get label names
+      codes = np.loadtxt('codes.txt', dtype=str)
+
+      #get hold-out set/test image file
+      valid = Path(params['pathOut'], valFile)
+
+      bda = DataBlock(blocks=(ImageBlock, MaskBlock(codes)),
+                  get_items = get_y,
+                  get_y = label_func,
+                  splitter=FileSplitter(valid),
+                  batch_tfms= tfs
+              ) 
+      dls = bda.dataloaders(Path(params['pathData'],params['imgFolder']), path=params['pathData'], bs=params['bs'], verbose = True, num_workers=0)
+
+
+      # unet_learner is a model using the backbone as a basis. it downsamples and convolves the data down, and then upsamples back up to have an output 
+      # that is the size of the input image.
+      learn = unet_learner(dls, params['backbone'], metrics=params['metrics'], act_cls=params['act_cls'], opt_func=params['opt_func'], loss_func = ls).to_fp16()
+      print(learn.summary())
+      return
+    
+def kfold_validation_train(self):
+    for AOI in self.folsersSet:
+        self.create_and_train()
+      
+    
+#train model based on parameters    
+def train_model(params, AOI, allFolders, valFile, fn, training):
+  # TODO check whether training bool is set here
+  # it's unclear if anything important happens with the inputs if training is set to false
+
+  os.getcwd()
+  codes = np.loadtxt('codes.txt', dtype=str) #get label names
+  fnames = get_image_files(Path(params['pathData'],params['imgFolder']))
+  #label_func = lambda o: params['pathData']/params['labelFolder']/str(o.parent).split('\\')[-1]/f'{o.stem}d{o.suffix}' #how to get label file name from image file name
+
+  #3 transformation settings: none, default, more aggressive
+  #two more optuna-able parameters here- apply_tfms and norm_tfms
+  if params['apply_tfms'] > 0:
+    if params['apply_tfms'] == 1:
+      tfs = [*aug_transforms(), UtilCNN.Normalize2() if params['norm_tfms'] else None]
+    else:
+      tfs = [*aug_transforms(flip_vert= True, max_rotate = 30, max_zoom = 1.2, min_zoom = 0.8, max_lighting = .5), 
+      Contrast(max_lighting = 0.5, p = 0.5), Saturation(max_lighting = 0.5, p = 0.5), 
+      Hue(max_hue = 0.5, p = 0.5), UtilCNN.Normalize2() if params['norm_tfms'] else None]
+  else:
+    if params['norm_tfms']:
+      tfs = UtilCNN.Normalize2()
+    else:
+      tfs = None
+#3 folder settings: train on current folder/dataset, train on all but current folder/dataset in 'allFolders', or train on datasets in 'allFolders'
+  if params['foldersOpt'] == 0:
+    folders = [AOI]
+  elif params['foldersOpt'] == 1:
+    folders = allFolders.copy()
+    folders.remove(AOI)
+  elif params['foldersOpt'] == 2:
+    folders = allFolders
+  else:
+    print('no valid folders')
+  #get hold-out set/test image file
+  valid = Path(params['pathOut'], valFile)
+
+  def get_y(o): 
+    return get_image_files(o, recurse = True, folders = folders)
+
+  #create dataset
+  bda = DataBlock(blocks=(ImageBlock, MaskBlock(codes)),
+                  get_items = get_y,
+                  get_y = label_func,
+                  splitter=FileSplitter(valid),
+                  batch_tfms= tfs
+              ) 
+  dls = bda.dataloaders(Path(params['pathData'],params['imgFolder']), path=params['pathData'], bs=params['bs'], verbose = True, num_workers=0)
+
+  # shape = dls.dataset.data.shape  
+  # print(shape)
+
+  dls.show_batch()
+  plt.savefig('batch_'+fn+'.png')
+
+  #setup neural net
+  #4 weight settings: no weights, [1,1,1], [1, 1, 10], [1, 11, 35]
+  #optuna variable
+  if params['weights'] == 0: #no weights
+    w = None
+  elif params['weights'] == 1: #equal weights
+    w = torch.tensor([1, 1, 1], device = "cuda").float()
+  elif params['weights'] == 2: #weigh damage more
+    w = torch.tensor([1, 1, 10], device = "cuda").float()
+  else: #approximately inverse to pixel count over Sievierodonetsk
+    w = torch.tensor([1, 15., 30.], device = "cuda").float()
+  print(w)
+  
+  #loss function (cross-entropy or focal loss)
+  #optunat variable
+  if params['loss_func'] == 'CE':
+    ls = CrossEntropyLossFlat(weight = w, axis=1)
+  else:
+    ls = FocalLossFlat(weight = w, axis = 1)
+  # unet_learner is a model using the backbone as a basis. it downsamples and convolves the data down, and then upsamples back up to have an output 
+  # that is the size of the input image.
+  learn = unet_learner(dls, params['backbone'], metrics=params['metrics'], act_cls=params['act_cls'], opt_func=params['opt_func'], loss_func = ls).to_fp16()
+  print(learn.summary())
+
+  #first train last layer
+  # TODO should allow user to choose fit function - fit_flat_cos should be the default option
+  learn.fit_flat_cos(params['optuna_epochs'],slice(params['lr']), cbs=[GradientAccumulation(n_acc=8), EarlyStoppingCallback (monitor='valid_loss', comp=None, min_delta=0.0,
+                      patience=1, reset_on_fit=True)]) #optuna variable
+  # TODO make sure to save this to results folder
+  learn.show_results(max_n=6, figsize=(7,8))
+  plt.savefig('model_1_'+fn+'.png')
+  learn.save(params['pathModel']+'model_1_'+fn)
+  #unfreeze and train full network
+  lrs = slice(params['lr']/400, params['lr']/4)
+  learn.unfreeze()
+
+#create predictions using model, parameters, and specified test dataset
+def getoutputs(params, AOI, valFile, fn, foldersSet, output_name):
+
+  #set up model to be able to import trained weights
+  outputfolder = str(params['pathOut'])+'/'+fn
+  if not os.path.exists(outputfolder):
+    os.mkdir(outputfolder)
+  #im_folder = str(params['pathData'])+"/"+params['imgFolder']+"/"+AOI
+  #targ_folder = str(params['pathData'])+"/"+params['labelFolder']+"/"+AOI
+
+  def get_y(o): return get_image_files(o, recurse = True, folders = foldersSet) #[AOI])
+  codes = np.loadtxt(Path(params['pathOut'],'codes.txt'), dtype=str)
+  
+  # print('Get output for: '+AOI)
+
+  bda = DataBlock(blocks=(ImageBlock, MaskBlock(codes)),
+                  get_items = get_y, #get_image_files,
+                  get_y = label_func,
+                  splitter=FileSplitter(Path(params['pathOut'], valFile)),
+                  batch_tfms= Normalize2() if params['norm_tfms'] else None
+                  #batch_tfms=[*aug_transforms(), Normalize.from_stats(*imagenet_stats)] if apply_tfms else Normalize.from_stats(*imagenet_stats)
+              ) 
+  dls = bda.dataloaders(Path(params['pathData'],params['imgFolder']), path=params['pathData'], bs=params['bs'], verbose = True, num_workers=0)
+  
+  # Weights selection (this value is chosen by optuna)
+  if params['weights'] == 0: #no weights
+    w = None
+  elif params['weights'] == 1: #equal weights
+    w = torch.tensor([1, 1, 1], device = "cuda").float()
+  elif params['weights'] == 2: #weigh damage more
+    w = torch.tensor([1, 1, 10], device = "cuda").float()
+  else: #approximately inverse to pixel count over city
+    w = torch.tensor([1, 50., 250.], device = "cuda").float()
+
+  # Loss function selection (This is chosen by optuna)
+  if params['loss_func'] == 'CE':
+    ls = CrossEntropyLossFlat(weight = w, axis=1)
+  elif params['loss_func'] == 'F':
+    ls = FocalLossFlat(weight = w, axis = 1)
+
+  # the unet_learner is the unet model that is implemented using fastai and our selected hyperparameters
+  learn = unet_learner(dls, params['backbone'], metrics=params['metrics'], act_cls=params['act_cls'], opt_func=params['opt_func'], loss_func = ls).to_fp16()
+
+  #get neural network weights
+  if os.path.isfile(str(params['pathModel'])+'model_2_'+fn+'.pth'):
+    print('model 2')
+    learn = learn.load(params['pathModel']+'model_2_'+fn)
+  else:
+    print('model 1')
+    learn = learn.load(params['pathModel']+'model_1_'+fn)
+  test_dl = dls.valid
+
+  #run prediction
+  preds = learn.get_preds(dl=test_dl)
+
+  #save outputs
+  outs = outputfolder+'/output_'+output_name
+  if(not os.path.isdir(outs)):
+    os.mkdir(outs)
+  files = []
+  folds = []
+  for i, pred in enumerate(preds[0]):
+    pred_arg = pred.argmax(dim=0).numpy()
+    pred_arg = pred_arg.astype(np.uint8)
+    im = Image.fromarray(pred_arg)
+    im2 = np.array(im)
+    plt.imshow(im2)
+    val = i
+    # print("this is the learn.dls.valid_ds.items string", str(learn.dls.valid_ds.items[i]))
+    # print("here's the list of substrings", str(learn.dls.valid_ds.items[i]).split('/'))
+    files.append(str(learn.dls.valid_ds.items[i]).split('\\')[-1])
+    folds.append(str(learn.dls.valid_ds.items[i]).split('\\')[-2])
+    filename = str(learn.dls.valid_ds.items[i]).split('\\')[-1]
+    im.save(outs+'/test_damage_'+filename.replace('.png', '_prediction.png').replace('.PNG', '_prediction.png'))
+  
+  #save localization
+  files = os.listdir(outs)
+  if(len(files) != len(folds)):
+    print("##############################VERY BAD############################")
+    print("Dumping files and folders:")
+    print("Files: ", files)
+    print("Files Length: ", len(files))
+    print("Folders: ", folds)
+    print("Folders Length: ", len(folds))
+  else:
+    print("nvm, I don't know where this problem originates")
+  for filename in files:
+    # print(filename)
+    image = cv2.imread(outs+'/'+filename,0)
+    image_copy = image.copy() 
+    image_copy[image_copy>0] = 1
+    cv2.imwrite(outs+'/'+filename.replace('damage', 'localization'),image_copy)
+  print('Done with output')
+  
+  #create human-friendly output
+  pred_folder = outputfolder+'/output_'+output_name
+  save_folder = outputfolder+'/output_'+output_name+'print'
+  if(not os.path.isdir(save_folder)):
+    os.mkdir(save_folder)
+  for i in range(len(files)):
+    filename = files[i]
+    if ('damage' in filename) & (filename[-4:] == '.png'):
+      
+        curr_pred = cv2.imread(pred_folder+'/'+filename, cv2.IMREAD_UNCHANGED)
+        curr_pred = curr_pred.astype('float')
+        curr_pred[curr_pred == 0] = np.nan
+        
+        post_file = filename.replace('test_damage_', '').replace('_prediction', '').replace('.png', '.PNG')
+        try:
+          im_folder = Path(params['pathData'], params['imgFolder'], folds[i])
+        except Exception as error:
+          print(error)
+          print("this is i: ", i)
+          print("this is the length of the folders: ", len(folds))
+          print("this is the length of the files: ", len(files))
+
+        if not os.path.isfile(Path(im_folder, post_file)):
+          post_file = post_file.replace('.PNG', '.png')
+        # print(Path(im_folder, post_file))
+        curr_post= cv2.imread(str(Path(im_folder, post_file)), cv2.IMREAD_UNCHANGED)
+        curr_post = cv2.cvtColor(curr_post, cv2.COLOR_BGR2RGB) 
+        
+        try:
+          targ_folder = str(Path(params['pathData'], params['labelFolder'], folds[i]))
+        except Exception as error:
+          print(error)
+          print("this is i: ", i)
+          print("this is the length of the folders: ", len(folds))
+          print("this is the length of the files: ", len(files))
+        targ_file = post_file.replace('.', 'd.')
+        curr_targ = cv2.imread(targ_folder+'/'+targ_file, cv2.IMREAD_UNCHANGED)
+        curr_targ = curr_targ.astype('float')
+        curr_targ[curr_targ == 0] = np.nan        
+
+        cmap = matplotlib.colors.ListedColormap(["white","yellow","orange","red"])        
+        f, ax = plt.subplots(1,2, figsize = (10,10))
+        ax[0].imshow(curr_post)
+        ax[0].imshow(curr_targ, alpha = 0.7, cmap=cmap)
+        ax[0].axis('off')
+        ax[0].title.set_text('Ground Truth')
+        ax[1].imshow(curr_post)
+        ax[1].imshow(curr_pred, alpha = 0.7, cmap=cmap)
+        ax[1].axis('off')
+        ax[1].title.set_text('Prediction')
+        plt.savefig(save_folder+'/'+filename.replace('test_damage', 'viz_pred').replace('_prediction', ''))
+        
+  print('Done with printer friendly version')
+  return files, folds 
+  
+#get score
+def getscore(params, files, folds, fn, AOI, filepre, output_name):
+  outputfolder = Path(params['pathOut'], fn)
+  probFolder = str(Path(outputfolder, 'output_'+output_name))
+  # print(probFolder)
+  
+  # print(str(probFolder).split('/'))
+  out_folder = "/".join(str(probFolder).split('/')[:-1])
+  columns = ['pred', 'gt']
+  dfs = []
+  for i in range(len(files)):
+    filename = files[i]
+    if ('damage' in filename):
+      df_curr = pd.DataFrame(columns = columns)
+      curr_pred = cv2.imread(probFolder+'/'+filename, cv2.IMREAD_UNCHANGED)
+      curr_pred_flat = curr_pred.flatten()
+      df_curr['pred'] = curr_pred_flat
+        
+        
+      #get ground truth
+      gt_file = filename.replace('test_damage_', '').replace('_prediction', 'd').replace('.png', '.PNG')
+      targ_folder = str(Path(params['pathData'], params['labelFolder'], folds[i]))
+      f = targ_folder+'/'+gt_file
+      if not os.path.isfile(f):
+        f = f.replace('.PNG', '.png')
+      curr_gt = cv2.imread(f, cv2.IMREAD_UNCHANGED)
+      df_curr['gt'] = curr_gt.flatten()
+      dfs.append(df_curr)
+  df = dfs[0]
+  for i in range(1, len(dfs)):
+    df = df.append(dfs[i])
+  df = df.reset_index()
+  df = df.drop('index', axis = 1)
+
+  df = df.loc[df['gt'] != 3].copy()
+  df['pred_loc'] = df['pred']
+  df.loc[((df['pred'] >0) & (df['pred'] <3)) , 'pred_loc'] = 1
+  df['gt_loc'] = df['gt']
+  df.loc[(df['gt_loc'] >0 ) , 'gt_loc'] = 1
+
+  #localization confustion matrix
+  gt_labels = df['gt_loc'].to_numpy()
+  res_labels = df['pred_loc'].to_numpy()
+  print(sklearn.metrics.confusion_matrix(gt_labels, res_labels))
+  options = ['no building', 'building']
+  plt.close() 
+  ax = sns.heatmap(sklearn.metrics.confusion_matrix(gt_labels, res_labels), annot=True,fmt=".0f", xticklabels = options, yticklabels = options,  cmap='Blues')
+  ax.set(xlabel="Predicted", ylabel="Actual", title = "Confusion Matrix")
+  ax.figure.tight_layout()
+  plt.savefig(Path(out_folder, filepre+'_cm_loc.png'))
+  plt.close() 
+
+  #localization f1
+  f1s = [0,0]
+  for i in range(2):
+    pred_curr = res_labels == i
+    pred_curr = pred_curr.astype(int)
+    gt_curr = gt_labels == i
+    gt_curr = gt_curr.astype(int)
+    curr_f1 = sklearn.metrics.f1_score(gt_curr, pred_curr)
+    f1s[i] = curr_f1
+    print('f1 ' + options[i] + ' :' + str(curr_f1))
+  loc_f1 = f1s[1]
+
+  #damage in buildings
+  df_damage = df.copy()
+  df_damage = df_damage[df_damage['gt_loc'] == 1]
+  #damage in buildings confusion amtrix
+  gt_labels = df_damage['gt'].to_numpy()
+  res_labels = df_damage['pred'].to_numpy()
+  print(sklearn.metrics.confusion_matrix(gt_labels, res_labels))
+  options = ['no building', 'no damage', 'damage']
+  ax = sns.heatmap(sklearn.metrics.confusion_matrix(gt_labels, res_labels)[1:,1:], annot=True,fmt=".0f", xticklabels = options[1:], yticklabels = options[1:],  cmap='Blues')
+  ax.set(xlabel="Predicted", ylabel="Actual", title = "Confusion Matrix")
+  ax.figure.tight_layout()
+  plt.savefig(Path(out_folder, filepre+'_cm_dmg.png'))
+  plt.close() 
+  #damage in buildings f1
+  f1s = [0,0,0]
+  for i in range(3):
+    pred_curr = res_labels == i
+    pred_curr = pred_curr.astype(int)
+    gt_curr = gt_labels == i
+    gt_curr = gt_curr.astype(int)
+    curr_f1 = sklearn.metrics.f1_score(gt_curr, pred_curr)
+    f1s[i] = curr_f1
+    print('f1 ' + options[i] + ' :' + str(curr_f1))
+  dmg_f1 = scipy.stats.hmean(f1s[1:3])
+  score = dmg_f1*.7 + loc_f1*.3
+  print('mean f1 :'+str(dmg_f1))
+  print('Score: '+str(score))
+  
+  #damage raw confusion matrix
+  gt_labels = df['gt'].to_numpy()
+  res_labels = df['pred'].to_numpy()
+  print(sklearn.metrics.confusion_matrix(gt_labels, res_labels))
+  ax = sns.heatmap(sklearn.metrics.confusion_matrix(gt_labels, res_labels), annot=True,fmt=".0f", xticklabels = options, yticklabels = options,  cmap='Blues')
+  ax.set(xlabel="Predicted", ylabel="Actual", title = "Confusion Matrix")
+  ax.figure.tight_layout()
+  plt.savefig(Path(out_folder, filepre+'_cm_rawdmg.png'))
+
+  f1s_raw = [0,0,0]
+  for i in range(3):
+    pred_curr = res_labels == i
+    pred_curr = pred_curr.astype(int)
+    gt_curr = gt_labels == i
+    gt_curr = gt_curr.astype(int)
+    curr_f1 = sklearn.metrics.f1_score(gt_curr, pred_curr)
+    f1s_raw[i] = curr_f1
+    print('f1 ' + options[i] + ' :' + str(curr_f1))
+    
+
+  #json
+  j = { "score": score,
+    "damage_f1": dmg_f1,
+    "localization_f1": loc_f1,
+    "damage_f1_no_damage": f1s[1],
+    "damage_f1_damage": f1s[2],
+    "raw_f1_noBuilding": f1s_raw[0],
+    "raw_f1_noDamage": f1s_raw[1],
+    "raw_f1_Damage": f1s_raw[2],
+    }
+  json_object = json.dumps(j)
+  # TODO change this to not have filepre in it
+  # just use the full filename
+  with open(Path(out_folder, filepre+"_results.json"), "w") as outfile:
+    outfile.write(json_object)
+  
+  return score, dmg_f1, loc_f1
+    
+
+
+torch.cuda.set_device(0)
+#torch.cuda.is_available = lambda : False
+#device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+#print(device)
+
+backbone_options = [resnet18, resnet34, resnet50, resnet101, resnet152]
+metric_options = [Dice, DiceMulti, JaccardCoeff]
+activation_function_options = [torch.nn.modules.activation.Mish, torch.nn.modules.activation.ReLU, torch.nn.modules.activation.Tanh]
+optimization_function_options = [ranger, SGD, RMSProp, Adam]
+
+#lr should go from 1e-7 to 0.1, searched using a log function
+lr_min = 1e-7
+lr_max = 0.1
+
+#norm_tfms is binary
+# No options needed for this  then
+
+#apply_tfms can be 0, 1, or 2
+apply_tfms_min = 0
+apply_tfms_max = 2
+
+#epochs 1 and 2 should range from 0 to 200
+# this can be implemented with early stopping callback -- so should just be set to 200 or something and then 
+# let the improvement slow down determine when to stop.
+
+#bs_accumulation- look for GradientAccumulation in run_dnd_optuna, this creats an effective batch size
+#without needing to worry about space
+
+#loss_func- CrossEntropyLossFlat(weight = w, axis=1) or FocalLossFlat(weight = w, axis = 1)
+loss_func_options = ['CE', 'F']
+
+#weights- 0,1, 2, or 3 categorical which corresponds to a certain weighing scheme used in loss function
+weights_min = 0
+weights_max = 3
+
+boolean_options = [False, True]
+
+def main():
+  # this is maximizing the score, loc_1, and dmg_1 from objective
+  # may not actually want to be maximizing loc_1 and dmg_1, so perhaps remove those
+  # should leave the first parameter, which represents score, as maximize because that is a metric of how many false positive/ false negative and true psotive/ true negative from training - AKA f1_score
+  study = optuna.create_study(directions=["maximize", "maximize", "maximize"])
+
+  with open('parameters.yml', 'r') as f:
+    param_file = yaml.safe_load(f)
+  study.optimize(objective, param_file.get('n_trials'), param_file.get('timeout'))
+  
+  
+## TODO: this function has received no modifications and needs to be examined thouroughly
+def run(self, random_state: int = 0):
+    """
+    Starts running the code, importing all modules that the program needs.
+    """
+    # self.load_data()
+    Util.check_and_create_directory(self.state.results_directory)
+
+    logger.debug(f'training fraction = {self.data.train_size}')
+    logger.debug(f'test_size = { (self.data.test_size + self.data.val_size)}')
+
+    X_train, X_test, y_train, y_test = self.data.train_test_split(random_state=random_state)
+
+    self.journal[C.TRAINING_POINTS] = X_train.shape[0]
+    self.journal[C.TESTING_POINTS] = X_test.shape[0]
+    self.journal[C.TRAIN_FRAC] = len(X_train)
+    self.journal[C.TEST_FRAC] = len(X_test)
+
+    # input shape and weights
+    model_input_shape = (X_train.shape[1],)
+    logging.debug(f'{model_input_shape = }')
+    initializer = self.initializer
+    weights = initializer(shape=(X_train.shape[0],))
+
+    # initial time
+    t0 = time.time()
+    # calling the function that performs the hyperparameter optimization to get the best network configuration
+    best_params = self.opt_tune(X_train, y_train, X_test, y_test, model_input_shape, weights)
+
+    t_tune = time.time() - t0
+
+    self.journal[C.RUN_TIME] = t_tune

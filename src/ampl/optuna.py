@@ -20,7 +20,7 @@ class OptunaStep(PipelineStep):
     def __init__(self,
                  name: str,
                  state: State,
-                 key: Literal[C.OPTUNA_NN, C.OPTUNA_DT]) -> None:
+                 key: Literal[C.OPTUNA_NN, C.OPTUNA_DT, C.OPTUNA_CNN]) -> None:
         """
 
         :type key: str
