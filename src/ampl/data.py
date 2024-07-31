@@ -428,7 +428,8 @@ class PreSplitData(Data):
         """
         Normalizes the df between 0 and 1.
         """
-        self.stats = self.df_train.describe()
+        # self.stats = self.df_train.describe()
+        self.stats = self.df.describe()
         if len(self.stats.columns) != len(self.df_train.columns):
             raise ValueError("Dataframe includes string data which was not enumerated")
         for col in self.df_train.columns:
