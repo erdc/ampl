@@ -2,13 +2,12 @@
 
 * Why are we looking at NNs and ML models
 * A set of steps are defined for the process of training a NN and ML models
-* Name the steps and mention breifly what those steps are
+* Name the steps and mention briefly what those steps are
 * Describe how the results are displayed with the percentage of points under a 20,10,5,2.5,0.5
-* With the steps defined, improving the workflow to allow for both non-technical and
-  technical users.
+* With the steps defined, improving the workflow to allow for both non-technical and technical users.
 * After improvements were made, the next goal was to allow for automating the process of training a network.
 
-Machine Learning techniques have risen in popularity as ML has shown to be useful in providing an expert level response to predicting values, recognizing patterns, and identifying objects in images. While working through applying ML to ["SYNTHETIC CFD ESTIMATION FOR BLACKHAWK AIRFOIL DRAG COEFFICIENT"](https://doi.org/10.2514/6.2024-1230), and ["ESTIMATING KINETIC ENERGY REDUCTION FOR TERMINAL BALLISTICS"](https://link.springer.com/article/10.1007/s00521-023-09382-3), it was noted that the steps for applying ML was similiar enough to where a single workflow could be designed to handle both of these problems along with previously unexplorered problem spaces. The steps that were taken for both the rotorcraft and ballistics problem were Feature Importance, Hyperparamter optimization which is searching for superior model parameters, training the best models returned from hyperparamter optimization, and evaluating the performance of the best models. This documentation will describe the details of each of the previously mentioned steps. Details will also be provided on how to utilize each of the steps individually or as an automated workflow. In this documentation we will describe an automated machine learning pipeline and present results of applying the pipeline to sample problems.
+Machine Learning techniques have risen in popularity as ML has shown to be useful in providing an expert level response to predicting values, recognizing patterns, and identifying objects in images. While working through applying ML to ["SYNTHETIC CFD ESTIMATION FOR BLACKHAWK AIRFOIL DRAG COEFFICIENT"](https://doi.org/10.2514/6.2024-1230), and ["ESTIMATING KINETIC ENERGY REDUCTION FOR TERMINAL BALLISTICS"](https://link.springer.com/article/10.1007/s00521-023-09382-3), it was noted that the steps for applying ML was similar enough to where a single workflow could be designed to handle both of these problems along with previously unexplored problem spaces. The steps that were taken for both the rotorcraft and ballistics problem were Feature Importance, Hyperparameter optimization which is searching for superior model parameters, training the best models returned from hyperparameter optimization, and evaluating the performance of the best models. This documentation will describe the details of each of the previously mentioned steps. Details will also be provided on how to utilize each of the steps individually or as an automated workflow. In this documentation we will describe an automated machine learning pipeline and present results of applying the pipeline to sample problems.
 
 The workflow steps used to design the models used for predicting values for the Ballistics and Rotorcraft work were the same steps. Since the Ballistics work and the rotorcraft work use very different data, but the steps in the workflow were the same, a general workflow that could design ML models for many different problems was desired. Having a general method would reduce effort in the beginning stages of working on a new problem or dataset and allow for exploration of methods and techniques to create better models. The general method would also remove the need to implement each step from ground up and would improve the timeline from receiving the data to having a reasonably performing model. The method for the general workflow is called "An Automated Machine Learning Pipeline" and the method will fit the following criteria:
 
@@ -36,11 +35,11 @@ The workflow steps used to design the models used for predicting values for the 
 
 ## Anaconda (Conda) setup
 
-Please download and install Anaconda python if it has not previously been installed. Installatiion instructions can be found within [README_anaconda](./README_anaconda.md?ref_type=heads#install-anaconda) if needed by the user.
+Please download and install Anaconda python if it has not previously been installed. Installation instructions can be found within [README_anaconda](./README_anaconda.md?ref_type=heads#install-anaconda) if needed by the user.
 
 ### Anaconda Setup
 
-It is important to maintain an up-to-date version of Anaconda. Even if a user already has Anaconda, please follow the steps for Updating Conda and Anaconda. Not having an updated version of conda is the most commonly experienced error by new users.
+It is important to maintain an up-to-date version of Anaconda. Even if a user already has Anaconda, please follow the steps for Updating Conda and Anaconda. Not having an updated version of onda is the most commonly experienced error by new users.
 
 1. Update Conda and Anaconda (Recommended for all users)
 
@@ -75,7 +74,7 @@ The user will need to setup their SSH key to git in order to pull the source cod
 
 ### Creating AMPL Code and Run/working Directory - for both API and CLI users
 
-The directory structure for working with AMPL is the same regardless of using the API or CLI method to interface with AMPL. This recommeneded directory structure will help with organization and determining where to put the AMPL repository, as well as provide a convienient way to organize the directory structure so that ML models and information (plots, statistics, etc..) are easily accessed by the user. A user can use any directory structure they would like, but will have to customize their yaml input file to account for any differences between their chosen directory structure and the recommended directory structure.
+The directory structure for working with AMPL is the same regardless of using the API or CLI method to interface with AMPL. This recommended directory structure will help with organization and determining where to put the AMPL repository, as well as provide a convenient way to organize the directory structure so that ML models and information (plots, statistics, etc..) are easily accessed by the user. A user can use any directory structure they would like, but will have to customize their yaml input file to account for any differences between their chosen directory structure and the recommended directory structure.
 
 #### Recommended directory structure
 
@@ -188,7 +187,7 @@ Note: If you don't have access or are getting a permission error from Git, pleas
 
  Note for Windows users: Please open Anaconda power shell as an administrator for the commands to work.
 
-1. Activate the conda environement you created previously while installing Anaconda.
+1. Activate the conda environment you created previously while installing Anaconda.
 
 ```shell
 # ex: conda activate <env_name>
@@ -232,7 +231,7 @@ python -m unittest test_pipeline_nn
 
 ```
 
-The command above that tests the pipeline connection does a small test to confirm if the connections are set up properly.  It starts with using Optuna to find the best trial and then runs 10 epochs to train that best trial.  After it is done running, it displays the reuslts of the test in a table that includes the layer type, output shape, and number of parameters. Below the table are more detials about the parameters that are used in the test run.
+The command above that tests the pipeline connection does a small test to confirm if the connections are set up properly.  It starts with using Optuna to find the best trial and then runs 10 epochs to train that best trial.  After it is done running, it displays the results of the test in a table that includes the layer type, output shape, and number of parameters. Below the table are more details about the parameters that are used in the test run.
 
 ### AMPL setup and Configuration file
 
@@ -265,7 +264,7 @@ cd all_run_dir
   
 ```
 
-2. Create a directory for your run and navigate to this directory.  Use a name that indentifies the dataset you will be using. Since the example that we will be using is based on a concrete dataset, we will name the directory appropriately:
+2. Create a directory for your run and navigate to this directory.  Use a name that identifies the dataset you will be using. Since the example that we will be using is based on a concrete dataset, we will name the directory appropriately:
 
 ```shell
 # ex: mkdir <dataset_run_dir>
@@ -310,7 +309,7 @@ mkdir concrete_data
 
 5. Copy your dataset to the <data_dir> directory. Please have the data in a SQLite or a CSV file type.  Most datasets can easily be converted into CSV format, but be sure that the index column is not included.
 
-As an example data set moving forward, we will be utilizing a public concrete data set. Copy the "concrete.csv" file from "AMPL\code\ampl\tests\data\concrete.csv"  to the concrete_data folder created in the previous step. The below folder sructre shows where the concrete.csv data file shoud go.
+As an example data set moving forward, we will be utilizing a public concrete data set. Copy the "concrete.csv" file from "AMPL\code\ampl\tests\data\concrete.csv"  to the concrete_data folder created in the previous step. The below folder structure shows where the concrete.csv data file should go.
 
 ```shell
     # the current folder structure  
