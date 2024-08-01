@@ -54,15 +54,15 @@ class PipelineModelEval(ModelEval):
         fig.suptitle('Training and Validation Loss Comparison')
         ax1.plot(loss, label='loss')
         ax1.plot(val_loss, label='val_loss')
-        ax1.set(xlabel='Epoch', ylabel='Loss - MAE')
+        ax1.set(xlabel='Epoch', ylabel='Loss')
         ax1.legend()
         # drop everything above threshold for a better look
-        thresh = 0.04
-        m = [x for x in loss if x <= thresh]
-        n = [x for x in val_loss if x <= thresh]
-        ax2.plot(m, label='loss')
-        ax2.plot(n, label='val_loss')
-        ax2.set(xlabel='Epoch', ylabel='Loss - MAE')
+        ymin, ymax = ax1.get_ylim()
+        thresh = 0.4  # Fraction of the y-axis to zoom in on
+        ax2.plot(loss, label='loss')
+        ax2.plot(val_loss, label='val_loss')
+        ax2.set_ylim((ymin, thresh*ymax))
+        ax2.set(xlabel='Epoch', ylabel='Loss')
         ax2.legend()
         fig.savefig(
             f'{self.state.plots_directory}{self.key}_loss_{self.state.model_name}_top_{j}.png')
