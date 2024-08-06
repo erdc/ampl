@@ -130,7 +130,7 @@ optuna_nn:
     - 'Adagrad'
     - 'Adamax'
 
-  loss: 'mae' #
+  loss: 'mae' # The following loss functions are currently supported: 'mae', 'mape', 'mse', 'msle', 'log_cosh'
   initializer: #
     !python/object:tensorflow.keras.initializers.GlorotUniform
 #    !python/object:tensorflow.keras.initializers.RandomUniform
