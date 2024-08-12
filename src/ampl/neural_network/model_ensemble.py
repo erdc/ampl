@@ -202,7 +202,7 @@ class PipelineModelEnsemble(PipelineStep):
         plt.plot(ideal, ideal * (1 - 0.05), 'c-.')
         plt.plot(ideal, ideal * (1 + 0.025), 'k--', label='+/- 2.5% Error')
         plt.plot(ideal, ideal * (1 - 0.025), 'k--')
-        plt.scatter(y_val, y_val_pred, c='crimson')
+        plt.scatter(y_val, y_val_pred, c='crimson', s=4)
         plt.xlabel('Actual Value of ' + self.state.target_variable, fontsize=15)
         plt.ylabel('Predicted Value of ' + self.state.target_variable, fontsize=15)
         plt.xticks(fontsize=15)
@@ -219,7 +219,7 @@ class PipelineModelEnsemble(PipelineStep):
         fig = plt.figure(figsize=(12, 8))
         plt.title(
             'Percent Error between Actual Value and Predicted Value of ' + self.state.target_variable)
-        plt.scatter(y_val, percent_error, c='crimson')
+        plt.scatter(y_val, percent_error, c='crimson', s=4)
         plt.yscale('log')
         # plt.ylim((1e-6, 1e2))
         plt.xlabel('Actual Value of ' + self.state.target_variable, fontsize=15)
@@ -235,7 +235,7 @@ class PipelineModelEnsemble(PipelineStep):
 
         # Absolute Error
         fig = plt.figure(figsize=(12, 8))
-        plt.scatter(y_val, abs_error, c='crimson')
+        plt.scatter(y_val, abs_error, c='crimson', s=4)
         plt.xlabel('Actual Value of ' + self.state.target_variable, fontsize=15)
         plt.ylabel('Absolute Error of ' + self.state.target_variable, fontsize=15)
         plt.xticks(fontsize=15)

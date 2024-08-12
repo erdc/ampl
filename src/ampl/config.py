@@ -234,7 +234,7 @@ class Configuration(dict):
         direction = self['optuna']['direction']
         pruner = self['optuna']['pruner']
 
-        loss = self['optuna_nn']['loss']
+        loss = self['optuna_nn']['loss'].lower()
         trial_epochs = self['optuna_nn']['trial_epochs']
         trial_min_layers = self['optuna_nn']['trial_min_layers']
         trial_max_layers = self['optuna_nn']['trial_max_layers']
@@ -266,7 +266,7 @@ class Configuration(dict):
     def create_build_nn(self) -> ampl.neural_network.PipelineModelBuild:
         state = self.create_state_nn()
 
-        loss = self['optuna_nn']['loss']
+        loss = self['optuna_nn']['loss'].lower()
         epochs = self['nn']['epochs']
         patience = self['nn']['patience']
 

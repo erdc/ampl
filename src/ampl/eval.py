@@ -159,7 +159,7 @@ class ModelEval(PipelineStep):
         plt.plot(ideal, ideal * (1 - 0.05), 'c-.')
         plt.plot(ideal, ideal * (1 + 0.025), 'k--', label='+/- 2.5% Error')
         plt.plot(ideal, ideal * (1 - 0.025), 'k--')
-        plt.scatter(y_val, y_val_pred, c='crimson')
+        plt.scatter(y_val, y_val_pred, c='crimson', s=4)
         plt.xlabel('Actual Value of ' + self.state.target_variable, fontsize=18)
         plt.ylabel('Predicted Value of ' + self.state.target_variable, fontsize=18)
         plt.xticks(fontsize=15)
@@ -178,7 +178,7 @@ class ModelEval(PipelineStep):
         plt.title(
             'Percent Error between Actual Value and Predicted Value of ' + self.state.target_variable + ' (Top Model #'
             + str(j) + ')')
-        plt.scatter(y_val, perc_error, c='crimson')
+        plt.scatter(y_val, perc_error, c='crimson', s=4)
         plt.yscale('log')
         plt.xlabel('Actual Value of ' + self.state.target_variable, fontsize=15)
         plt.ylabel('Percent Error (%) of ' + self.state.target_variable, fontsize=15)
@@ -197,7 +197,7 @@ class ModelEval(PipelineStep):
         plt.title(
             'Absolute Error between Actual Value and Predicted Value of ' + self.state.target_variable +
             ' (Top Model #' + str(j) + ')')
-        plt.scatter(y_val, abs_error, c='crimson')
+        plt.scatter(y_val, abs_error, c='crimson', s=4)
         plt.xlabel('Actual Value of ' + self.state.target_variable, fontsize=15)
         plt.ylabel('Absolute Error of ' + self.state.target_variable, fontsize=15)
         plt.xticks(fontsize=15)

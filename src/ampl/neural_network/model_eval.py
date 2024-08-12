@@ -58,7 +58,7 @@ class PipelineModelEval(ModelEval):
         ax1.legend()
         # drop everything above threshold for a better look
         ymin, ymax = ax1.get_ylim()
-        thresh = 0.4  # Fraction of the y-axis to zoom in on
+        thresh = 0.25  # Fraction of the y-axis to zoom in on
         ax2.plot(loss, label='loss')
         ax2.plot(val_loss, label='val_loss')
         ax2.set_ylim((ymin, thresh*ymax))

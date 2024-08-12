@@ -32,7 +32,7 @@ class LossFunc(Enum):
     MAPE = 'mape'
     MSE = 'mse'
     MSLE = 'msle'
-    LOGCOSH = 'log_cosh'
+    LOG_COSH = 'log_cosh'
 
 
 class Direction(Enum):
