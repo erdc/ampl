@@ -12,7 +12,7 @@ HTTPS prompts you with userid and access token information everytime you push/pu
 
 
 ## Option 1: Get SSH key (recommended)
-First we need to create a ssh key.  If you already have a ssh key, make sure that it is added to Gitlab. Instructions on adding the ssh key to gt can be found in section XXXXX and 
+First we need to create a ssh key.  If you already have a ssh key, make sure that it is added to Gitlab. Instructions on adding the ssh key to git can be found in section "Create the ssh key" below
 
 ### Create the ssh key
 This is needed to clone the repo, as well as pull/push from the repo.
@@ -31,6 +31,7 @@ ssh-keygen -o -t rsa -b 4096 -C "<email@myEmail.com>"
 `Generating public/private rsa key pair.`
 
 Enter file in which to save the key `(/home/user/.ssh/id_rsa)`
+
 4. Accept the suggested filename and directory
 
 
@@ -58,6 +59,12 @@ In the Title box, type a description, like Work Laptop or Home Workstation.\
 Optional. Select the Usage type of the key. Authentication & Signing.\
 Optional. Remove the expiration date
 Select Add key.
+
+For ease of reference the following is the windows command to copy the git public key. This can also be found in the git document linked in this section:
+
+```shell
+cat ~/.ssh/id_rsa.pub | clip
+```
 
 ## Option 2: Get HTTPS Access Token (needed to clone the repo, as well as pull/push)
 
