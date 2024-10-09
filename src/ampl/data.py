@@ -386,13 +386,15 @@ class PreSplitData(Data):
         if self.df_train_y is not None:
             self.df[self.target_variable] = self.df_train_y.astype('float')
 
-            self.target_stats = self.df_train_y[self.target_variable].describe()
+            # self.target_stats = self.df_train_y[self.target_variable].describe()
 
         if self.df_test_y is not None:
             self.df[self.target_variable] = self.df_test_y.astype('float')
 
         if self.df_val_y is not None:
             self.df[self.target_variable] = self.df_val_y.astype('float')
+
+        self.target_stats = self.df[self.target_variable].describe()
 
     def enum_columns(self):
         """
