@@ -301,3 +301,283 @@ You will want to create a directory for your specific AMPL run to keep your runs
     │   ├── all_run_dir
   ->│   │   ├── concrete_run_dir
   ```
+3. Move into the <concrete_run_dir> directory:
+
+```shell
+# ex: cd <dataset_run_dir> 
+cd concrete_run_dir
+
+# The current folder structure
+  ├── ampl_dir
+  │   ├── code
+  │   ├── all_run_dir
+->│   │   ├── concrete_run_dir
+
+```
+
+4. Create a directory to hold your data:
+
+```shell
+# ex: mdir <data_dir>
+mkdir concrete_data
+
+# The current folder structure
+  ├── AMPL
+  │   ├── code
+  │   ├── all_run_dir
+  │   │   ├── concrete_run_dir
+->│   │   │   ├── concrete_data
+
+```
+
+5. Copy your dataset to the <data_dir> directory. Please have the data in a SQLite or a CSV file type.  Most datasets can easily be converted into CSV format, but be sure that the index column is not included.
+
+As an example data set moving forward, we will be utilizing a public concrete data set. Copy the "concrete.csv" file from "AMPL\code\ampl\tests\data\concrete.csv"  to the concrete_data folder created in the previous step. The below folder sructre shows where the concrete.csv data file shoud go.
+
+```shell
+    # the current folder structure  
+    ├── AMPL
+    │   ├── code
+    │   ├── all_run_dir
+    │   │   ├── concrete_run_dir
+    │   │   │   ├── concrete_data
+  ->│   │   │   │   ├── concrete.csv
+```
+
+A direct link can be found to the example concrete dataset at the following link:
+  <https://archive.ics.uci.edu/dataset/165/concrete+compressive+strength>
+
+  Yeh,I-Cheng. (2007). Concrete Compressive Strength. UCI Machine Learning Repository. <https://doi.org/10.24432/C5PK67>.
+
+6. Create a default configuration file:
+
+  Run the following code from within the <concrete_run_dir> directory in the terminal. The following command is using the CLI method of interfacing with ampl.
+
+ex: mkdir <dataset_run_dir>
+  ```shell
+
+  python -m ampl ampl_config.yml -c
+
+  # the current folder structure  
+    ├── AMPL
+  mkdir concrete_run_dir
+  ```
+  ```shell
+  The folder structure will look like this
+    ├── ampl_dir
+    │   ├── code
+    │   ├── all_run_dir
+    │   │   ├── concrete_run_dir
+    │   │   │   ├── concrete_data
+    │   │   │   │   ├── concrete.csv
+  ->│   │   │   ├── ampl_config.yml
+  ->│   │   ├── concrete_run_dir
+  ```
+
+7. Edit the `ampl_config.yml` file by filling in all the required fields.
+
+The following block of code provides a description of the variables that require user modification in the ampl_config.yml. A table is provided later in this step that shows the edits to the yaml file for the example using the concrete dataset. When using a different dataset, please refer back to the table in this section as a quick reference for the variables you will need to modify when applying ampl to a different dataset.
+
+```shell
+# A name that describes what the study is about and needs to be unique.
+study_name: 'your_study_name'  
+# The column that you are trying to predict
+target_variable: 'your_target_variable'
+# Name of the data     
+dataset_name: 'your_dataset_name'
+# The path to the SQLITE data file, set to NULL if using a CSV file. 
+data_file: null 
+# If the data file is SQLite, the data_table_name needs to be the name of the table you wish to use for the study from the SQLite data file.  This is null if using CSV data.
+data_table_name: null 
+# The path to the CSV file, set to null for SQLite.
+csv_file: 'path_to_CSV'
+# The path where it will save the normalized version of the CSV file.
+# It is not mandatory to normalize the data, but it is recommended. 
+# If using a sqlite input file this line should be set to null
+csv_normalized_file : 'path_to_CSV' + '_normalized'
+# If you have any columns with categorical data, this enumerates them to numerical data.
+# Set to null if there is no categorical data
+cols_to_enum:  null 
+# Include all of the possible features (columns) to use.  When listing out columns, make sure to not add the column from the target_variable(s).
+feature_list: 'col_1'
+              'col_2'
+              'col_3'
+              'col_4'
+              'col_5'
+              'col_6'
+    
+# The number of columns used as features in the dataset, not including the target variable
+number_of_features: 6 
+```
+
+The following table shows all of the variables in the `ampl_config.yml` file that require modification, their default values, and an example modification to work with the concrete data set example.
+
+| Variable           | Default Variables         | Concrete Variables                                                   |
+| :----------------- | :------------------------ | :----- |
+| study_name         | 'your_study_name'         | 'compress_strength' |
+| target_variable    | 'your_target_variable'    | 'Concrete compressive strength' |
+| dataset_name       | 'your_dataset_name'       | 'strength_estimate' |
+| data_file          | null                      | null |
+| data_table_name    | null                      | null |
+| csv_file           | 'path_to_CSV'             | 'concrete_data/concrete.csv' |
+| cols_to_enum       | null                      | null |
+| feature_list       | null                      | - 'Cement' - 'Blast Furnace Slag' - 'Fly Ash' - 'Water' - 'Superplasticizer' - 'Coarse Aggregate' - 'Fine Aggregate' - 'Age' |
+| number_of_features | 6                         | 8 |
+
+Most of the fields in the table above are a copy and paste into the ampl_config.yml file. However, the feature list requires a little editing. The following is how the feature_list using the concrete example should look in the yaml file
+
+```shell
+# The following is how the feature_list should look in the yml file
+feature_importance:
+  feature_list:  # REQUIRED USER MODIFICATION # List of columns to include in study/run, don't include any target columns
+    - 'Cement' 
+    - 'Blast Furnace Slag' 
+    - 'Fly Ash'
+    - 'Water'
+    - 'Superplasticizer'
+    - 'Coarse Aggregate' 
+    - 'Fine Aggregate'
+    - 'Age'
+```
+
+This is what the directory structure looks like after using the examples provided in each of the previous steps in this guide and after running the concrete example code:
+
+```shell
+├── AMPL
+│   ├── code
+│   ├── all_run_dir
+│   │   ├── concrete_run_dir
+│   │   │   ├── concrete_data
+│   │   │   │   ├── concrete.csv
+│   │   │   ├── ampl_config.yml
+│   │   │   ├── results_compress_strength
+│   │   │   │   ├── plots
+│   │   │   │   ├── saved_models
+```
+
+### Two Methods for Interfering with AMPL - API, CLI
+
+AMPL provides two different ways to interface with it. One is through the AMPL API (Application Programming Interface) and the other is via AMPL CLI (Command Line Interface). The API will be helpful to users wishing to use scripts to run AMPL, and the CLI will be helpful for those wishing to run AMPL without writing scripts. An example of using the CLI would be running on HPC. Both the AMPL API and the AMPL CLI will be described in detail in their respective sections below.
+
+#### AMPL API
+
+The AMPL API will provide the user with the means to interface with AMPL through scripts. This type of interface is useful for creating scripts to run AMPL as part of a workflow. In the next section we will show an example of using a script that uses the AMPL API.
+
+##### Getting started API
+
+The following script will use AMPL to create a fully dense neural network using the previously created [folder structure](#Suggested-directory-structure-for-organizing-AMPL), and example downloaded concrete.csv dataset. This script is available in the examples folder under [examples/concrete_example.py]("./examples/concrete_example.py")
+
+```python
+from ampl import *
+from ampl.util import Util
+import os
+# Change the directory 
+filename = 'ampl_config.yml'
+# If using an ide, open the AMPL root folder. See the 
+# comments at the top of this file for an example directory structure
+work_dir = './all_run_dir/concrete_run_dir/'
+# This will reset the running directory to concrete_run_dir
+os.chdir(work_dir)
+# Print the files located at the relative path. This will help with finding the yml 
+# file if a user receives file not found while trying to work with relative paths.
+#Util.relativePathHelper(work_dir)
+config = Configuration(filename)
+pipeline = config.create_pipeline_nn()
+pipeline.run_all()
+```
+
+The following is an example using python to create a yaml file. You will still need to edit the yaml file with the information for the run. The lines within the yaml file that require modification are listed in an example within the [Suggested directory structure for organizing AMPL](Suggested-directory-structure-for-organizing-AMPL) section. This script is available in the examples folder under [examples/create_config_api_example.py]("./examples/create_config_api_example.py")
+
+```python
+from ampl import *
+from ampl.util import Util
+import os
+# Project should be run 
+# change the directory 
+filename = 'ampl_config.yml'
+# Open the root AMPL project in your ide for running this code
+# An example of the folder structure can be located within the readme 
+# README.md -> AMPL Interface -> Creating AMPL Code and Run/working Directory - for both API and CLI users -> Example Directory Structure
+# use the concrete_run_dir from the root folder of AMPL
+work_dir = './all_run_dir/concrete_run_dir/'
+# this will reset the running directory to concrete_run_dir
+os.chdir(work_dir)
+# Create default config file
+Util.create_default_config_file(filename)
+```
+
+The next example shown here is for both Neural networks and Decision Trees. The following code is an example of what to do if your dataset contains columns that are used to create a target column. In the below example we use the starting_velcoity cubed minus the ending_velocity cubed to populate the values within the target column for every row within the dataframe. The commented lines
+
+```python
+import ampl
+# Ignore this step if the dataset contains the target column already.
+# Here the 'starting_Velocity(m/s)' and 'ending_Velocity(m/s)' are two columns that are already part of the dataset and are used
+# to create the target column 
+target_func = lambda df_: df_['starting_Velocity(m/s)'].astype('float') ** 3 - df_['ending_Velocity(m/s)'].astype('float') ** 3
+                            
+config = ampl.Configuration('data/pipeline_config.yml', target_col_function=target_func)
+# Creating Neural Network AMPL
+pipeline_nn = config.create_pipeline_nn()
+pipeline_nn.optuna.run()
+# Getting Best Trial and Top Trials from Optuna Study
+best_trial_df, top_trials_df = pipeline_nn.optuna.load_trials_df() 
+print(best_trial_df)
+print(top_trials_df)
+pipeline_nn.build.run()
+pipeline_nn.eval.run()
+# only a few methods for ensembling are implented at this time. 
+#pipeline_nn.ensemble.run()
+ 
+# Creating Decision Tree AMPL - If the user would like to try decision trees instead of neural networks, uncomment the lines below
+# pipeline_dt = config.create_pipeline_dt()
+# pipeline_dt.optuna.run()
+# pipeline_dt.build.run()
+# pipeline_dt.eval.run()
+# pipeline_dt.ensemble.run()
+```
+
+#### AMPL CLI
+
+The AMPL CLI will provide an easy to use means for calling AMPL functionality through the command line. The CLI is helpful when the user doesn't want to write scripts to call AMPL, but wants to call the functions of AMPL. An example application of using the CLI would be to run AMPL on HPC.
+##### Getting started CLI
+Once AMPL is installed in your conda env, use a terminal to run AMPL.
+AMPL CLI help - To display the AMPL CLI help use the following command
+```shell
+python -m ampl -h
+```
+It will display similar text as shown below, this text may differ as the application matures
+```text
+usage: FAIT AMPL package [-h] [-d] [-c] [-dt] [-o] [-b] [-ev] [-en]
+                         config_file
+Process AMPL Pipeline Configuration YAML file.
+positional arguments:
+  config_file           Path to YAML Configuration file
+optional arguments:
+  -h, --help            show this help message and exit
+  -d, --debug           Print debug info
+  -c, --create_config   Creates a new default YAML Configuration file
+  -dt, --decision_tree  Use Decision Tree instead of Neural Networks
+  -o, --optuna          Run Optuna Model step
+  -b, --build           Run Build Model step
+  -ev, --evaluate       Run Evaluate Model step
+  -en, --ensemble       Run Ensemble Model step
+```
+##### Run AMPL using CLI
+From the terminal run the following commands. The examples assume that steps were taken to create the following directory structure:
+├── AMPL
+│   ├── code
+│   ├── all_run_dir
+│   │   ├── concrete_run_dir
+│   │   │   ├── concrete_data
+│   │   │   │   ├── concrete.csv
+│   │   │   ├── ampl_config.yml
+```shell
+conda activate ampl
+cd concrete_run_dir #cd <dataset1_run_dir>
+python -m ampl ampl_config.yml 
+```
+However, if you would like to run a single step within the pipeline, you can use the following commands instead. For example, to just run the build and evaluate steps, you would use the following AMPL-CLI command with the 'build' and 'evaluate' command line parameters. Additional command line parameters are located in the [Getting started CLI](#Getting-started-CLI) section:
+```shell
+cd concrete_run_dir #cd <dataset1_run_dir>
+python -m ampl ampl_config.yml -b -ev
+```
