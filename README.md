@@ -273,13 +273,11 @@ You will want to create a directory for your specific AMPL run to keep your runs
 
 
   ex: cd <ampl_dir>/<ampl_run_dir>
-  from the AMPL directory
+  from the AMPL root directory
   ```shell
   cd all_run_dir
   ```
-
-  If following along from the example the path will be
-  cd ../../../all_run_dir
+   
   ```shell
   The folder structure will look like this
     ├── ampl_dir
@@ -289,11 +287,11 @@ You will want to create a directory for your specific AMPL run to keep your runs
   
 2. Create a directory for your run and navigate to this directory.  Use a name that indentifies the dataset you will be using. Since the example that we will be using is based on a concrete dataset, we will name the directory appropriately:
 
-
   ex: mkdir <dataset_run_dir>
   ```shell
   mkdir concrete_run_dir
   ```
+
   ```shell
   The folder structure will look like this
     ├── ampl_dir
@@ -301,33 +299,35 @@ You will want to create a directory for your specific AMPL run to keep your runs
     │   ├── all_run_dir
   ->│   │   ├── concrete_run_dir
   ```
+
 3. Move into the <concrete_run_dir> directory:
 
-```shell
 # ex: cd <dataset_run_dir> 
+```shell
 cd concrete_run_dir
-
+```
+```shell
 # The current folder structure
   ├── ampl_dir
   │   ├── code
   │   ├── all_run_dir
 ->│   │   ├── concrete_run_dir
-
 ```
 
 4. Create a directory to hold your data:
 
-```shell
 # ex: mdir <data_dir>
+```shell
 mkdir concrete_data
+```
 
+```shell
 # The current folder structure
   ├── AMPL
   │   ├── code
   │   ├── all_run_dir
   │   │   ├── concrete_run_dir
 ->│   │   │   ├── concrete_data
-
 ```
 
 5. Copy your dataset to the <data_dir> directory. Please have the data in a SQLite or a CSV file type.  Most datasets can easily be converted into CSV format, but be sure that the index column is not included.
@@ -353,31 +353,26 @@ A direct link can be found to the example concrete dataset at the following link
 
   Run the following code from within the <concrete_run_dir> directory in the terminal. The following command is using the CLI method of interfacing with ampl.
 
-ex: mkdir <dataset_run_dir>
   ```shell
-
   python -m ampl ampl_config.yml -c
-
-  # the current folder structure  
-    ├── AMPL
-  mkdir concrete_run_dir
   ```
+
   ```shell
   The folder structure will look like this
     ├── ampl_dir
     │   ├── code
     │   ├── all_run_dir
-    │   │   ├── concrete_run_dir
+  ->│   │   ├── concrete_run_dir <--- from inside this folder
     │   │   │   ├── concrete_data
     │   │   │   │   ├── concrete.csv
-  ->│   │   │   ├── ampl_config.yml
-  ->│   │   ├── concrete_run_dir
+    │   │   │   ├── ampl_config.yml <---this file will be created
   ```
 
 7. Edit the `ampl_config.yml` file by filling in all the required fields.
 
 The following block of code provides a description of the variables that require user modification in the ampl_config.yml. A table is provided later in this step that shows the edits to the yaml file for the example using the concrete dataset. When using a different dataset, please refer back to the table in this section as a quick reference for the variables you will need to modify when applying ampl to a different dataset.
 
+The following block provides the variables a user will need to modify in order to run AMPL along with a description of the variables. Look over the next block but not change is needed yet.
 ```shell
 # A name that describes what the study is about and needs to be unique.
 study_name: 'your_study_name'  
@@ -406,11 +401,12 @@ feature_list: 'col_1'
               'col_5'
               'col_6'
     
-# The number of columns used as features in the dataset, not including the target variable
+# The number of columns used as features in the dataset. Do not include the include the target variable. 
 number_of_features: 6 
 ```
 
-The following table shows all of the variables in the `ampl_config.yml` file that require modification, their default values, and an example modification to work with the concrete data set example.
+The following table shows all of the variables in the `ampl_config.yml` file that require modification, their default values, and an example modification to work with the concrete data set example. 
+Do note that even though 'data_file' and 'data_table_name' are listed in the table below, they are not modified for the concrete example. 'data_file' and 'data_table_name' are for working with sqlite which is not used in this example. 
 
 | Variable           | Default Variables         | Concrete Variables                                                   |
 | :----------------- | :------------------------ | :----- |
@@ -440,7 +436,25 @@ feature_importance:
     - 'Age'
 ```
 
-This is what the directory structure looks like after using the examples provided in each of the previous steps in this guide and after running the concrete example code:
+The following command will run the concrete example from the concrete_run_dir. The directory structure of where the user should be running the command is now provided followed by the commands the user needs to run:
+
+```shell
+    ├── ampl_dir
+    │   ├── code
+    │   ├── all_run_dir
+  ->│   │   ├── concrete_run_dir <--- run the command from inside this directory
+    │   │   │   ├── concrete_data
+    │   │   │   │   ├── concrete.csv
+    │   │   │   ├── ampl_config.yml
+```
+
+```shell
+cd concrete_run_dir #cd <dataset1_run_dir>
+python -m ampl ampl_config.yml
+```
+
+
+This is what the directory structure looks like after using the examples provided in each of the previous steps in this guide and after running the concrete example code. You will find plots, graphs, and other information in the 'results_compress_strength' folder:
 
 ```shell
 ├── AMPL
