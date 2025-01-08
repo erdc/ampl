@@ -111,6 +111,8 @@ optuna_nn:
   max_neurons: 500 #
   min_lr: 0.001 # 1e-3 #
   max_lr: 0.1 #1e-1 #
+  min_power: 5  # power of 2 for batch_size, e.g. a value of 5 indicates 2^5 = 32 (minimum value)
+  max_power: 10  # power of 2 for batch_size, e.g. a value of 10 indicates 2^10 = 1024 (maximum value)
   trial_epochs: 20 #
 
   activations: #

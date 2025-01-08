@@ -63,6 +63,8 @@ class PipelineModelBuild(PipelineStep):
                                         NNOptimizers(top_trial[C.OPTIMIZER]))
         activation = UtilNN.get_keras_activation(top_trial[C.ACTIVATION])
 
+        batch_size = int(top_trial[C.BATCH_SIZE])
+
         model = tf.keras.Sequential()
         model.add(tf.keras.Input(shape=input_shape))
         model.add(tf.keras.layers.Dense(int(top_trial[C.N_UNITS_INPUT_LAYER]), activation=activation))
@@ -75,7 +77,7 @@ class PipelineModelBuild(PipelineStep):
         model.compile(loss=self.loss, optimizer=optimizer, metrics=self.metrics)
         t_start = time.time()
         history = model.fit(X_train, y_train, epochs=self.epochs, validation_data=(X_val, y_val),
-                            callbacks=[self.reduce_lr, self.early_stopping])
+                            batch_size=batch_size, callbacks=[self.reduce_lr, self.early_stopping])
         t_end = time.time()
         return model, t_end - t_start
 

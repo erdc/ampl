@@ -83,6 +83,7 @@ class Constant(object):
     N_LAYERS: Final[str] = 'n_layers'
     N_UNITS_LAYER: Final[str] = 'n_units_layer_'
     N_UNITS_INPUT_LAYER: Final[str] ='n_units_inputl'
+    BATCH_SIZE: Final[str] = 'batch_size'
 
     VERBOSITY: Final[str] = 'verbosity'
     OBJECTIVE : Final[str] = 'objective'

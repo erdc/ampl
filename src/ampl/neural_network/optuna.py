@@ -72,6 +72,13 @@ class PipelineOptuna(OptunaStep):
         NNOptimizers.ADAM, NNOptimizers.SGD, NNOptimizers.RMSPROP, NNOptimizers.NADAM,
         NNOptimizers.ADADELTA, NNOptimizers.ADAGRAD, NNOptimizers.ADAMAX)
     """ Tensorflow Optimizers to use in Optuna Study"""
+
+    min_power: int = 5
+    """ Minimum power for batch size to use in Optuna study; 2^5 = 32 (minimum value)"""
+
+    max_power: int = 10
+    """ Maximum power for batch size to use in Optuna study; 2^10 = 1024 (minimum value)"""
+
     loss: LossFunc = LossFunc.MAE
     """ Tensorflow Loss functions to use in Optuna Study"""
 
@@ -131,6 +138,8 @@ class PipelineOptuna(OptunaStep):
         optimizers: Tuple[NNOptimizers] = (
         NNOptimizers.ADAM, NNOptimizers.SGD, NNOptimizers.RMSPROP, NNOptimizers.NADAM,
         NNOptimizers.ADADELTA, NNOptimizers.ADAGRAD, NNOptimizers.ADAMAX)
+        min_power: int = 5
+        max_power: int = 10
         loss: LossFunc = LossFunc.MAE
 
         def __post_init__(self):
@@ -188,6 +197,12 @@ class PipelineOptuna(OptunaStep):
             learning_rate = trial.suggest_float(C.LEARNING_RATE, self.min_lr, self.max_lr)
             optimizer_str = trial.suggest_categorical(C.OPTIMIZER, self.optimizers)
 
+            # Generate powers of 2 within the range for batch_size
+            powers_of_2 = [2 ** i for i in range(self.min_power, self.max_power + 1)]
+
+            # Suggest a value from the list of powers of 2 for batch_size
+            batch_size = trial.suggest_categorical(C.BATCH_SIZE, powers_of_2)
+
             # Get Keras Optimizer object with Optuna suggested learning rate
             optimizer = UtilNN.get_keras_optimizer(learning_rate, optimizer_str)
 
@@ -199,7 +214,7 @@ class PipelineOptuna(OptunaStep):
                 optuna.integration.TFKerasPruningCallback(trial, monitor),
             ]
             history = model.fit(self.x_train, self.y_train, validation_data=(self.x_valid, self.y_valid),
-                                epochs=self.trial_epochs, callbacks=callbacks)
+                                batch_size=batch_size, epochs=self.trial_epochs, callbacks=callbacks)
 
             return history.history[monitor][-1]
 

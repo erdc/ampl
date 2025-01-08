@@ -43,6 +43,7 @@ class OptunaStep(PipelineStep):
         complete_trials = [t for t in study.trials if t.state == TrialState.COMPLETE]
         best_trial = study.best_trial
 
+        # All parameters that are being varied by Optuna are added with this line:
         best_trial_df = pd.DataFrame.from_dict(best_trial.params.items())
         best_trial_df = best_trial_df.transpose()
         best_trial_df.rename(columns=best_trial_df.iloc[0], inplace=True)
