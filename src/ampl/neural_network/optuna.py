@@ -272,6 +272,8 @@ class PipelineOptuna(OptunaStep):
                     max_lr=self.max_lr,
                     activations=self.activations,
                     optimizers=self.optimizers,
+                    min_power=self.min_power,
+                    max_power=self.max_power,
                     loss=self.loss),
                 n_trials=self.n_trials,
                 # n_jobs=self.n_jobs,

@@ -111,8 +111,10 @@ optuna_nn:
   max_neurons: 500 #
   min_lr: 0.001 # 1e-3 #
   max_lr: 0.1 #1e-1 #
-  min_power: 5  # power of 2 for batch_size, e.g. a value of 5 indicates 2^5 = 32 (minimum value)
-  max_power: 10  # power of 2 for batch_size, e.g. a value of 10 indicates 2^10 = 1024 (maximum value)
+  # If you would like to use the same batch_size for every trial (i.e. not vary it), set 'min_power' and 'max_power' to the same value.
+  # e.g. If you wanted to use Keras' default batch_size, which is 32, set both 'min_power' and 'max_power' to 5.
+  min_power: 5  # power of 2 for batch_size, e.g. a value of 5 indicates batch_size 32 (2^5 = 32) [minimum value]
+  max_power: 10  # power of 2 for batch_size, e.g. a value of 10 indicates batch_size 1024 (2^10 = 1024) [maximum value]
   trial_epochs: 20 #
 
   activations: #

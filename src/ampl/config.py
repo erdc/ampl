@@ -241,6 +241,8 @@ class Configuration(dict):
         max_neurons = self['optuna_nn']['max_neurons']
         min_lr = self['optuna_nn']['min_lr']
         max_lr = self['optuna_nn']['max_lr']
+        min_power = self['optuna_nn']['min_power']
+        max_power = self['optuna_nn']['max_power']
         initializer = self['optuna_nn']['initializer']
         activations = self['optuna_nn']['activations']
         optimizers = self['optuna_nn']['optimizers']
@@ -255,6 +257,8 @@ class Configuration(dict):
                                                     max_neurons=max_neurons,
                                                     min_lr=min_lr,
                                                     max_lr=max_lr,
+                                                    min_power=min_power,
+                                                    max_power=max_power,
                                                     activations=activations,
                                                     optimizers=optimizers,
                                                     loss=LossFunc(loss),
