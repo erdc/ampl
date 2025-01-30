@@ -41,15 +41,21 @@ data:
   # If both input sources are present CSV will take precedence
 
   data_table_name: 'dataset'  # REQUIRED USER MODIFICATION. # set to the table name in your database.
-  data_normalized_table_name: '{{data.data_table_name}}_normalized' # Normalized version of SQL table to read from and write to
   csv_file: './data/dataset+target.csv' # Input data file in CSV file format with all the features (X) and target variable (y)
-  csv_normalized_file : './data/dataset+target_normalized.csv' # Normalized version of CSV file to read from and write to
+  pre_split: null
+#    csv: null
+#      train: 'path_to_training.csv'
+#      test: 'path_to_test.csv'
+#      val: 'path_to_test.csv'
+#    sql: null
+#      train: 'train_table_name'
+#      test: 'test_table_name'
+#      val: 'val_table_name'
 
   cols_to_enum:  # REQUIRED USER MODIFICATION # String Columns to convert to Category type
     - "x00"
     - "x01"
     - "x02"
-  normalize_data: true # OPTIONAL USER MODIFICATION FOR PIPELINE
 
   # All these percentages must add up to 1
   train_frac: 0.8 # percentage of data used for training.
@@ -86,9 +92,17 @@ nn: # neural network build settings
 
 dt: # decision tree - xgboost build settings
   early_stopping_rounds: 20
+  
+  #choose option 1 or 2 below wehn workin with decision trees
+
+  # Option 1
   loss: "reg:squarederror"
   eval_metric: 'rmse'
-  n_estimator: 100
+
+  # Option 2
+  #loss: "reg:absoluteerror"
+  #eval_metric: 'mae'
+  
   verbosity: 1 # 0 (silent) - 3 (debug)
 
 optuna: # Optuna general settings
@@ -109,6 +123,12 @@ optuna_nn:
   max_neurons: 500 #
   min_lr: 0.001 # 1e-3 #
   max_lr: 0.1 #1e-1 #
+  # If you would like to use the same batch_size for every trial (i.e. not vary it), set 'min_power' and 'max_power' to
+  # the same value.
+  # e.g. If you wanted to use Keras' default batch_size, which is 32, set both 'min_power' and 'max_power' to 5.
+  # If you would like to tune the batch_size, set 'min_power' and 'max_power' to different values to set the range.
+  min_power: 5  # power of 2 for batch_size, e.g. a value of 5 indicates batch_size 32 (2^5 = 32) [minimum value]
+  max_power: 5  # power of 2 for batch_size, e.g. a value of 10 indicates batch_size 1024 (2^10 = 1024) [maximum value]
   trial_epochs: 2 # 20
 
   activations: #
