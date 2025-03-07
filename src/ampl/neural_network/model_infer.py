@@ -42,7 +42,7 @@ class PipelineModelInfer(PipelineStep):
     def load_model(self, model_index: int) -> Any:
         raise NotImplementedError
 
-    def run(self, random_state: int = 0):
+    def run(self, random_state: int = 0, model_ext=C.MODEL_EXT_NN):
         logging.debug('Running NN Inferencing step')
         Util.check_and_create_directory(self.state.results_directory)
         Util.check_and_create_directory(self.state.saved_models_directory)
