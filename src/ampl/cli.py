@@ -32,6 +32,8 @@ class PipelineCli(object):
                                        default=False, help='Run Evaluate Model step')
         self.parser.add_argument('-en', '--ensemble', action='store_true',
                                        default=False, help='Run Ensemble Model step')
+        self.parser.add_argument('-inf', '--infer', action='store_true',
+                                 default=False, help='Run Inferencing step')
 
         self.args = self.parser.parse_args()
 
@@ -63,7 +65,7 @@ class PipelineCli(object):
                 # SqlUtil.to_sql(self.pipeline.state.data.df, self.config.create_data_db(),
                 #                self.config['data']['data_normalized_table_name'])
 
-            if args.optuna or args.build or args.evaluate or args.ensemble:
+            if args.optuna or args.build or args.evaluate or args.ensemble or args.infer:
                 if args.optuna:
                     self.pipeline.optuna.run()
                 if args.build:
@@ -72,5 +74,8 @@ class PipelineCli(object):
                     self.pipeline.eval.run()
                 if args.ensemble:
                     self.pipeline.ensemble.run()
+                if args.infer:
+                    self.pipeline.infer.run()
             else:
+                # does not include inferencing in a full pipeline run
                 self.pipeline.run_all()

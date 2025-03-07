@@ -21,10 +21,12 @@ class State:
     num_models: int
     target_variable: str
     number_of_features: int
+    infer_dataset_name: str
     results_directory: str = './results/'
     saved_models_directory: str = './results/saved_models/'
     plots_directory: str = './results/plots/'
     journal_file: str = None
+    metadata_file: str = None
     std_perc_err: float = field(default=None, init=False)
 
     def __post_init__(self):
@@ -69,6 +71,9 @@ class State:
         journal[C.DATA][C.FEATURE_IMPORTANCE][C.RESULTS] = self.data.feature_importance.results_df.to_dict()
         journal[C.DATA][C.FEATURE_IMPORTANCE].pop(f"{self.data.feature_importance.shap_values=}".split("=")[0].split('.')[-1])
 
+        if self.metadata_file is None:
+            self.metadata_file = (self.results_directory + 'metadata_' + self.model_name + '.json')
+
         metadata = {}
         metadata['journal_file'] = self.journal_file
         metadata['order_of_model_features'] = self.data.feature_importance_list
@@ -77,7 +82,7 @@ class State:
             metadata['encoder_mapping'] = self.data.encoder_mapping
         else:
             metadata['encoder_mapping'] = {}
-        Util.write_dict_to_json(metadata, self.results_directory + 'metadata_' + self.model_name + '.json')
+        Util.write_dict_to_json(metadata, self.metadata_file)
 
         Util.update_journal(C.MODEL, journal, self.journal_file)
 

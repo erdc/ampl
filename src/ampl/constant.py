@@ -12,6 +12,7 @@ class Constant(object):
     OPTUNA_NN: Final[str] = 'optuna_nn'
     EVALUATE_NN: Final[str] = 'eval_nn'
     ENSEMBLE_NN: Final[str] = 'ensemble_nn'
+    INFER_NN: Final[str] = 'infer_nn'
 
     BUILD_DT: Final[str] = 'build_dt'
     OPTUNA_DT: Final[str] = 'optuna_dt'

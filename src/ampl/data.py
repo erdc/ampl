@@ -20,14 +20,14 @@ logger = logging.getLogger(__name__)
 @dataclass
 class Database:
     """
-    Database class to hold sqllite3 object
+    Database class to hold sqlite3 object
     """
     data_file: str
     """SQLite3 data file path"""
 
     def connection(self) -> sqlite3.Connection:
         """
-        sqllite3 connection context manager that closes connection automatically
+        sqlite3 connection context manager that closes connection automatically
         :rtype: sqlite3.Connection
         """
         return self.connect(self.data_file)
@@ -36,7 +36,7 @@ class Database:
     @contextmanager
     def connect(sql_data_file: str) -> sqlite3.Connection:
         """
-        sqllite3 connection context manager that closes connection automatically
+        sqlite3 connection context manager that closes connection automatically
         :rtype: sqlite3.Connection
         :param sql_data_file:
         """
@@ -874,3 +874,31 @@ class SqlUtil(object):
 
             # Update the SQLite table with the new df
             df_filtered.to_sql(sql_table_name, conn, if_exists='replace', index=False)
+
+# class Infer:
+#     target_variable: str
+#     """ target variable (y) column name"""
+#
+#     def __init__(self, target_variable: str) :
+#         self.target_variable = target_variable
+
+
+def read_inf_csv(csv_file, **kwargs) -> pd.DataFrame:
+    """
+    :param csv_file:
+    :type csv_file: str
+    """
+
+    df = pd.read_csv(csv_file, **kwargs)
+    return df
+
+def read_inf_sql(table_name: str, db_file: str, **kwargs) -> pd.DataFrame:
+    """
+    :param table_name:
+    :type table_name: str
+    :param db_file:
+    :type db_file: str
+    """
+    with Database.connect(db_file) as connection:
+        df = pd.read_sql_query("SELECT * FROM " + table_name, connection, **kwargs)
+    return df

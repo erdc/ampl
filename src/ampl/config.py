@@ -6,7 +6,7 @@ from jinja2 import Template, Undefined
 from ampl.util import Util
 from ampl.enums import *
 from ampl.state import State
-from ampl.data import Data, Database, read_csv, read_sql, read_pre_split_csv, read_pre_split_sql
+from ampl.data import Data, Database, read_csv, read_sql, read_pre_split_csv, read_pre_split_sql, read_inf_csv, read_inf_sql
 from ampl.feature_importance import FeatureImportance
 import ampl.neural_network.pipeline
 import ampl.decision_tree.pipeline
@@ -196,6 +196,7 @@ class Configuration(dict):
         saved_models_directory = self['model']['saved_models_directory']
         plots_directory = self['model']['plots_directory']
         number_of_features = self['feature_importance']['number_of_features']
+        infer_dataset_name = self['infer']['infer_dataset_name']
 
         state = State(
             data,
@@ -204,6 +205,7 @@ class Configuration(dict):
             num_models,
             target_variable,
             number_of_features,
+            infer_dataset_name,
             results_directory=results_directory,
             saved_models_directory=saved_models_directory,
             plots_directory=plots_directory,
@@ -300,18 +302,42 @@ class Configuration(dict):
 
         return ens_nn
 
+    def create_infer_nn(self) -> ampl.neural_network.PipelineModelInfer:
+        state = self.create_state_nn()
+
+        infer_dataset_name = self['infer']['infer_dataset_name']
+        infer_db = self['infer']['infer_db']
+        infer_csv = self['infer']['infer_csv']
+
+        if infer_dataset_name:
+            if infer_db:
+                infer_data_db = self['infer']['infer_db']['infer_data_db']
+                infer_data_table_name = self['infer']['infer_db']['infer_data_table_name']
+                df_inf = read_inf_sql(infer_data_table_name, infer_data_db)
+            elif infer_csv:
+                infer_data_csv = self['infer']['infer_csv']['infer_data_csv']
+                df_inf = read_inf_csv(infer_data_csv)
+
+            infer_nn = ampl.neural_network.PipelineModelInfer(state,
+                                                              infer_dataset_name,
+                                                              df_inf)
+
+            return infer_nn
+
     def create_pipeline_nn(self) -> ampl.neural_network.Pipeline:
         state = self.create_state_nn()
         optuna_nn = self.create_optuna_nn()
         build_nn = self.create_build_nn()
         eval_nn = self.create_eval_nn()
         ensemble_nn = self.create_ensemble_nn()
+        infer_nn = self.create_infer_nn()
 
         _pipeline = ampl.neural_network.Pipeline(state,
                                                  build=build_nn,
                                                  eval=eval_nn,
                                                  ensemble=ensemble_nn,
-                                                 optuna=optuna_nn
+                                                 optuna=optuna_nn,
+                                                 infer=infer_nn
                                                  )
 
         return _pipeline
@@ -407,3 +433,4 @@ class Configuration(dict):
                                                           EnsembleMode(ensemble_mode),
                                                           num_models)
         return ens_nn
+

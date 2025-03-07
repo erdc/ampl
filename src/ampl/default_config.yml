@@ -81,7 +81,7 @@ nn: # neural network build settings
 dt: # decision tree - xgboost build settings
   early_stopping_rounds: 200
   
-  #choose option 1 or 2 below wehn workin with decision trees
+  #choose option 1 or 2 below when working with decision trees
 
   # Option 1
   loss: "reg:squarederror"
@@ -98,7 +98,7 @@ optuna: # Optuna general settings
   direction: 'minimize' #'maximize' #
   parallel_percent: 0.9 # Percentage of cores to utilize for optuna between [0.1 - 0.9]
   # This will need a special constructor to be written to parse handling a function call
-  #  being save in a variable. you will also need to add the following library to the pipeline_config file
+  #  being saved in a variable. you will also need to add the following library to the pipeline_config file
   # from pruners import MedianPruner
   pruner:
     !python/object:pruners.MedianPruner #
@@ -188,3 +188,15 @@ ensemble_dt: # DT ensemble not supported yet
   # '1WA' = NN weighted avg.
 
   ensemble_mode: '1A' # str
+
+# ////////////// Optional Step: Inferencing //////////////
+#################### Options ####################
+infer: # Make predictions on new unseen data using existing model
+  infer_dataset_name: null # Unique name used to specify which dataset the model prediction file belongs to
+
+  infer_db: null # If using csv file set this to null
+#    infer_data_db: './data/your_data.sqlite' # Input data file in SQLite file format
+#    infer_data_table_name: 'your_table_name' # set to the table name in your new database.
+  infer_csv: null # If using db file set this to null
+#    infer_data_csv: './data/your_data.csv' # Input data file in CSV file format
+
