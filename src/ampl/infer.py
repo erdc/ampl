@@ -42,6 +42,7 @@ class ModelInfer(PipelineStep):
         with open(self.state.metadata_file, 'r') as file:
             metadata = json.load(file)
 
+        # Load necessary data from metadata file for pre-processing
         features = metadata.get('order_of_model_features')
         encoders = metadata.get('encoder_mapping')
         col_stats = metadata.get('column_stats')

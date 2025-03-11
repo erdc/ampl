@@ -200,3 +200,16 @@ ensemble_dt: # DT ensemble not supported yet
   # '1WA' = NN weighted avg.
 
   ensemble_mode: '1A' # str
+
+# ////////////// Optional Step: Inferencing //////////////
+#################### Options ####################
+infer: # Make predictions on new unseen data using existing model
+  infer_dataset_name: null # Unique name used to specify which dataset the model prediction file belongs to
+
+  infer_db: null # If using csv file set this to null
+#    infer_data_db: './data/your_data.sqlite' # Input data file in SQLite file format
+#    infer_data_table_name: 'your_table_name' # set to the table name in your new database.
+  infer_csv: null # If using db file set this to null
+#    infer_data_csv: './data/your_data.csv' # Input data file in CSV file format
+
+
