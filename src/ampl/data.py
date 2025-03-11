@@ -629,6 +629,25 @@ def read_pre_split_sql(train_sql_table: str,
 
     return data
 
+def read_inf_csv(csv_file, **kwargs) -> pd.DataFrame:
+    """
+    :param csv_file:
+    :type csv_file: str
+    """
+
+    df = pd.read_csv(csv_file, **kwargs)
+    return df
+
+def read_inf_sql(table_name: str, db_file: str, **kwargs) -> pd.DataFrame:
+    """
+    :param table_name:
+    :type table_name: str
+    :param db_file:
+    :type db_file: str
+    """
+    with Database.connect(db_file) as connection:
+        df = pd.read_sql_query("SELECT * FROM " + table_name, connection, **kwargs)
+    return df
 
 class SqlUtil(object):
     @staticmethod
@@ -875,30 +894,4 @@ class SqlUtil(object):
             # Update the SQLite table with the new df
             df_filtered.to_sql(sql_table_name, conn, if_exists='replace', index=False)
 
-# class Infer:
-#     target_variable: str
-#     """ target variable (y) column name"""
-#
-#     def __init__(self, target_variable: str) :
-#         self.target_variable = target_variable
 
-
-def read_inf_csv(csv_file, **kwargs) -> pd.DataFrame:
-    """
-    :param csv_file:
-    :type csv_file: str
-    """
-
-    df = pd.read_csv(csv_file, **kwargs)
-    return df
-
-def read_inf_sql(table_name: str, db_file: str, **kwargs) -> pd.DataFrame:
-    """
-    :param table_name:
-    :type table_name: str
-    :param db_file:
-    :type db_file: str
-    """
-    with Database.connect(db_file) as connection:
-        df = pd.read_sql_query("SELECT * FROM " + table_name, connection, **kwargs)
-    return df
