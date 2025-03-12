@@ -111,14 +111,14 @@ class ModelEval(PipelineStep):
             # Max Percent Error
             max_perc_err = perc_error.max()
 
-            self.journal[C.MAE] = mae
-            self.journal[C.MSE] = mse
-            self.journal[C.RMSE] = rmse
-            self.journal[C.R2] = r2
-            self.journal[C.NRMSE] = nrmse
-            self.journal[C.MAX_ERR] = max_err
-            self.journal[C.MAPE] = mape
-            self.journal[C.MAX_PERC_ERR] = max_perc_err
+            self.journal[f'model_{j}'][C.MAE] = mae
+            self.journal[f'model_{j}'][C.MSE] = mse
+            self.journal[f'model_{j}'][C.RMSE] = rmse
+            self.journal[f'model_{j}'][C.R2] = r2
+            self.journal[f'model_{j}'][C.NRMSE] = nrmse
+            self.journal[f'model_{j}'][C.MAX_ERR] = max_err
+            self.journal[f'model_{j}'][C.MAPE] = mape
+            self.journal[f'model_{j}'][C.MAX_PERC_ERR] = max_perc_err
 
             # For percent difference distribution
             pred_y = y_val_pred  # .flatten()
@@ -129,7 +129,7 @@ class ModelEval(PipelineStep):
                 Util.get_model_stats(y_val, pred_y))
             percent_errors = Util.calculate_percent_error(target_slice_pd)
 
-            self.journal[C.PERCENT_ERRORS] = percent_errors
+            self.journal[f'model_{j}'][C.PERCENT_ERRORS] = percent_errors
 
             #################### Plots ####################
             abs_error = abs(y_val_pred - y_val)
