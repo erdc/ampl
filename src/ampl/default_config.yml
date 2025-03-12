@@ -191,12 +191,19 @@ ensemble_dt: # DT ensemble not supported yet
 
 # ////////////// Optional Step: Inferencing //////////////
 #################### Options ####################
-infer: # Make predictions on new unseen data using existing model
-  infer_dataset_name: null # Unique name used to specify which dataset the model prediction file belongs to
+# If you have previously trained a model with AMPL, you have the ability to use that saved model to make inferences on
+# new unseen data within the same ranges as the data you originally used to train that saved model. Be sure that the
+# original dataset that was used to train the model is being referenced in the 'data' section above so that
+# the correct metadata is saved. This ensures that your new data is pre-processed using the same schemes as the
+# original data. Also be sure that the saved model is in your run directory in the 'saved_models' folder, then edit this
+# section to point to the new data you would like to make inferences on.
 
-  infer_db: null # If using csv file set this to null
+infer: # Make predictions on new unseen data using existing model
+  infer_dataset_name: null # Unique name used to specify which dataset the model inference output file belongs to
+
+  infer_db: null # IMPORTANT: If using a csv file set this to null
 #    infer_data_db: './data/your_data.sqlite' # Input data file in SQLite file format
-#    infer_data_table_name: 'your_table_name' # set to the table name in your new database.
-  infer_csv: null # If using db file set this to null
+#    infer_data_table_name: 'your_table_name' # set to the table name in your new database
+  infer_csv: null # IMPORTANT: If using a db file set this to null
 #    infer_data_csv: './data/your_data.csv' # Input data file in CSV file format
 
