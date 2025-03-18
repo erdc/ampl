@@ -11,7 +11,7 @@
 #   Templating is only applied once, which means nested references of templating will not work!
 {% endraw %}
 
-# ////////// Step 0: initial common variables and defaults ////////////
+# ////////// Step 0: Initialize Common Variables and Defaults ////////////
 
 model:
   study_name: 'your_study_name' # REQUIRED USER MODIFICATION. !!Make it UNIQUE to avoid overwriting results!!
@@ -30,7 +30,7 @@ model:
   # All the saved models will be outputted to <target_variable>_<dataset_name>_top_0_model.keras for NN and .json for DT
   # in the saved_models_directory location
 
-# ////////////// Step 1: Data and Feature Importance //////////////
+# ////////////// Step 0.5: Data Pre-Processing //////////////
 
 db: # File refers to SQLite3 database file and specifically its path
   data_file: './data/your_data.sqlite' # REQUIRED USER MODIFICATION , If using csv_file set this to null
@@ -61,6 +61,8 @@ data:
   val_frac: 0.1 # percentage of data used for validation.
   test_frac: 0.1 # percentage of data used for testing.
 
+# ////////////// Step 1: Feature Importance //////////////
+
 feature_importance:
   feature_list:  # REQUIRED USER MODIFICATION # List of columns to include in study/run, don't include any target columns
     - 'col_1'
@@ -72,7 +74,7 @@ feature_importance:
 
   number_of_features: 6 # REQUIRED USER MODIFICATION # number of top important feature(s) to report
 
-# ////////////// Step 2: Neural Network, Decision Tree (XGBoost), and  Optuna Settings //////////////
+# ////////////// Steps 2 & 3: Neural Network/Decision Tree (XGBoost) Optuna and Model Build Settings //////////////
 
 nn: # neural network build settings
   epochs: 1000 # No. of epochs to use in NN Model training
