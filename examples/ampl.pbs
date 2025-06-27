@@ -10,8 +10,6 @@
 #PBS -M <Your_Email_Address (if you want to be notified of the start/completion of your job)>
 
 module load gcc/12.2.0
-module load cseinit-noloads
-module load cse/miniforge
 module load cuda
 
 export CONDA_HOME=$(which conda | rev | cut -d/ -f3- | rev)
