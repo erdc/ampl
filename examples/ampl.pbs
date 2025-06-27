@@ -2,7 +2,7 @@
 #PBS -A <project_ID>
 #PBS -q standard
 #PBS -l select=1:ncpus=128:mpiprocs=128:ngpus=1 
-#PBS -l walltime=<number of hours for the job to run. exp: "24:00:00">
+#PBS -l walltime=HH:MM:SS
 #PBS -N <name_of_the_job>
 #PBS -j oe
 #PBS -l application=python
