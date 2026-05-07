@@ -29,7 +29,7 @@ The following guide will explain how to run codes on HPC Carpenter for new users
 [HPC Carpenter Quick Start Guide](https://centers.hpc.mil/users/docs/erdc/carpenterQuickStartGuide.html)
 
 
-## Installing Anaconda 
+## Installing Miniforge 
 You will need access to Miniforge on the HPC system to create a conda environment. The conda environment will be used to install the packages needed to run AMPL. 
 
 You can use preinstalled Miniforge modules on HPC.
@@ -231,9 +231,9 @@ pip install -e ampl
 
 ## PBS Script
 
-The following steps are necessary to create a PBS script to allow the user to request resources and run AMPL on Carpenter. To help the user, a sample PBS script may be found within the examples folder under the name 'ml-pipeline.pbs'. A user will need to edit some details within this file to get things to function. Before attempting to run AMPL using a PBS script, it is required that the user has followed the steps in sections: [Installing Anaconda](Installing-Anaconda) and [Creating the Anaconda Environment in HPC to Use AMPL - with GPU support](Creating-the-Anaconda-Environment-in-HPC-to-Use-AMPL---with-GPU-support)
+The following steps are necessary to create a PBS script to allow the user to request resources and run AMPL on Carpenter. To help the user, a sample PBS script may be found within the examples folder under the name 'ml-pipeline.pbs'. A user will need to edit some details within this file to get things to function. Before attempting to run AMPL using a PBS script, it is required that the user has followed the steps in sections: [Installing Miniforge](Installing-Miniforge) and [Creating the conda Environment on HPC to Use AMPL - with GPU support](Creating-the-conda-Environment-on-HPC-to-Use-AMPL---with-GPU-support)
 
-The full pbs script is provided here for example and will be exaplained in the following sections:
+The full pbs script is provided here for example and will be explained in the following sections:
 
 ```shell
 #!/bin/bash
@@ -248,11 +248,10 @@ The full pbs script is provided here for example and will be exaplained in the f
 #PBS -M <Your Email Address>
 
 module load gcc/12.2.0
-module load cseinit
-module load cse/anaconda3/latest
 module load cuda
 
-source /app/CSE/CSE.20240128/Release/anaconda3-2023.03-1/etc/profile.d/conda.sh
+export CONDA_HOME=$(which conda | rev | cut -d/ -f3- | rev)
+source $CONDA_HOME/etc/profile.d/conda.sh
 conda activate ampl
 
 cd /p/work/<userID>/AMPL/all_run_dir/concrete_run_dir/concrete_data/
@@ -325,8 +324,6 @@ After the PBS preamble section, the next section of the PBS script will load the
 
 ```shell
 module load gcc/12.2.0
-module load cseinit
-module load cse/anaconda3/latest
 module load cuda
 ```
 
@@ -335,7 +332,8 @@ module load cuda
 The next piece of the PBS script will activate the conda environment that will be used to run the AMPL code. Enter your HPC <user_name> into the source file path to locate your conda environment and insert the <env_name> of the environment you would like to activate:
 
 ```shell
-source /p/home/<user_name>/anaconda3/etc/profile.d/conda.sh # path to your conda.sh on HPC
+export CONDA_HOME=$(which conda | rev | cut -d/ -f3- | rev)
+source $CONDA_HOME/etc/profile.d/conda.sh
 conda activate ampl
 ```
 
@@ -365,11 +363,10 @@ Your pbs script should look similar to the following for Carpenter, for other HP
 #PBS -M <Your Email Address>
 
 module load gcc/12.2.0
-module load cseinit
-module load cse/anaconda3/latest
 module load cuda
 
-source /app/CSE/CSE.20240128/Release/anaconda3-2023.03-1/etc/profile.d/conda.sh
+export CONDA_HOME=$(which conda | rev | cut -d/ -f3- | rev)
+source $CONDA_HOME/etc/profile.d/conda.sh
 conda activate ampl
 
 cd /p/work/<userID>/AMPL/all_run_dir/concrete_run_dir
