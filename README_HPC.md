@@ -7,7 +7,7 @@ The following guide is for running AMPL on the HPC Carpenter. Users must have ac
 
 The following steps will be described in detail in the following sections
 
-1. Load module cse/anaconda3/latest
+1. Load module cse/miniforge
 2. Create Conda env
 3. SSH key
 4. Git lab add pub key
@@ -30,26 +30,41 @@ The following guide will explain how to run codes on HPC Carpenter for new users
 
 
 ## Installing Anaconda 
-You will need access to Anaconda on the HPC system to create a conda environment. The conda environment will be used to install the packages needed to run AMPL. 
+You will need access to Miniforge on the HPC system to create a conda environment. The conda environment will be used to install the packages needed to run AMPL. 
 
-You can use preinstalled Anaconda3 modules on HPC.
+You can use preinstalled Miniforge modules on HPC.
 
-NOTE: These steps are specific to Carpenter
+NOTE: These steps are specific to Carpenter, and it is important to note that some of the commands in this section will not work unless the user’s default shell is bash. If a user would like to change their default shell, they will need to reach out to an HPC admin as the user cannot make this change on their own.
 
-```shell 
+<!--```shell 
 module load gcc/12.2.0
+```-->
+
+```shell
+# Check the shell
+echo $SHELL 
 ```
 
 ```shell
-module load cseinit
+module load cseinit-noloads
 ```
 
 ```shell
-module load cse/anaconda3/latest
+module load cse/miniforge
 ```
 
-```shell
+<!--```shell
 bash
+```-->
+
+```shell
+# Set the CONDA_HOME environment variable to the parent directory that contains the conda executable
+export CONDA_HOME=$(which conda | rev | cut -d/ -f3- | rev)
+```
+
+```shell
+# Manually initialize conda using the path set in $CONDA_HOME
+source $CONDA_HOME/etc/profile.d/conda.sh
 ```
 
 ```shell
@@ -63,11 +78,11 @@ source .bashrc
 ```
 
 
-## Creating the Anaconda Environment in HPC to Use AMPL - with GPU support 
+## Creating the conda Environment on HPC to Use AMPL - with GPU support 
 
-Follow the following instructions to create your conda environment and install the packages needed to use AMPL:
+Follow the following instructions to create your conda environment and install the packages needed to use AMPL.
 
-```shell
+<!--```shell
 # Create the conda environemnt 
 conda create -n ampl python=3.11 pandas numpy yaml jupyter recommonmark -y
 ```
@@ -95,6 +110,21 @@ pip install shap pillow requests xgboost jinja2 more_itertools optuna-integratio
 ```shell
 # and a few more installs
 pip install tensorflow[and-cuda] nvidia-cudnn-cu12 tensorrt --extra-index-url https://pypi.nvidia.com
+```
+
+```shell
+# use pip to install a few things
+pip install --upgrade pip myst-parser
+```-->
+
+Download the "HPC_environment.yml file" from the repo, and upload it onto the HPC system. Next, run the following commands:
+
+```shell
+conda activate
+```
+
+```shell
+conda env create -f HPC_environment.yml
 ```
 
 ## Creating Working Directory
@@ -134,7 +164,7 @@ The proper AMPL directory structure should now look like the following if all 7 
 
 ### Super Important to Know!!!
 
-Many HPC systems purge files in your work directory ($WORKDIR) that have not be touched for 30 days and there is no way to recovery these files. You will want to regularly back up files from your work directory to avoid losing your work.
+Many HPC systems purge files in your work directory ($WORKDIR) that have not be touched for 30 days and there is no way to recovery these files. You will want to regularly back up files from your work directory to avoid losing your work. As a result, the user may opt to set up the "code" folder in their home directory ($HOME) and perform all AMPL runs in their work directory ($WORKDIR).
 
 ## Create the SSH Key and Add the Key to Git
 
