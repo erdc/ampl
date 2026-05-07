@@ -63,7 +63,7 @@ You should then see (base).
 
 Note: If the user experiences an error during these installs, the most common source for that error is the need to update conda and anaconda as seen in the previous step.
 
-```shell
+<!--```shell
 conda create -n ampl python=3.11 pandas numpy yaml scikit-learn jupyter recommonmark scikit-learn-intelex plotly::plotly anaconda::sphinx -y
 ```
 
@@ -81,6 +81,36 @@ python -m pip install --upgrade pip myst-parser joblib
 
 ```shell
 pip install shap pillow requests xgboost jinja2 more_itertools optuna-integration tensorflow
+```-->
+
+The installation instructions differ whether the user is using Windows or MacOS.
+        
+For Windows users - Download the "environment\_win.yml" file from the repo, and follow the following instructions: 
+
+```shell
+conda env create -f environment_win.yml
+```
+
+```shell
+conda activate ampl
+```
+
+For MacOS users - Download the "environment\_mac.yml" and "requirements\_mac.txt" files from the repo, and follow the instructions below:
+
+```shell
+conda env create -f environment_mac.yml
+```
+
+```shell
+conda activate ampl
+```
+
+```shell
+python -m pip install --upgrade pip
+```
+
+```shell
+pip install -r requirements_mac.txt
 ```
 
 ## Setting up gitlab
